@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermark Adder - UtilityBox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        canvas {
+            border: 2px dashed #d1d5db;
+            background-color: #fff;
+            max-width: 100%;
+            height: auto;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-4xl">
+        <button onclick="window.location.href='../index.html'" class="mb-6 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors duration-200">← Back to Services</button>
+        
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 text-center">Watermark Adder</h1>
+        <p class="text-gray-600 mb-8 text-center">Add a custom watermark to your images with live preview</p>
+
+        <!-- Image Upload Section -->
+        <div class="mb-8 p-6 bg-gray-50 rounded-xl">
+            <div class="mb-4">
+                <label for="baseImageInput" class="block text-sm font-medium text-gray-700 mb-2">Select Main Image</label>
+                <input type="file" id="baseImageInput" accept="image/*" class="w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all duration-200">
+            </div>
+            <div>
+                <label for="watermarkImageInput" class="block text-sm font-medium text-gray-700 mb-2">Select Watermark Image</label>
+                <input type="file" id="watermarkImageInput" accept="image/*" class="w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all duration-200">
+            </div>
+        </div>
+
+        <!-- Canvas for Live Preview -->
+        <div class="flex justify-center mb-8">
+            <canvas id="imageCanvas" class="w-full rounded-xl"></canvas>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-6 bg-gray-50 rounded-xl">
+            <!-- Watermark Size -->
+            <div class="flex flex-col items-center">
+                <label for="sizeSlider" class="text-sm font-medium text-gray-700 mb-2">Watermark Size</label>
+                <input type="range" id="sizeSlider" min="5" max="100" value="25" class="w-full accent-blue-500 cursor-pointer">
+                <span id="sizeValue" class="text-xs text-gray-500 mt-1">25%</span>
+            </div>
+
+            <!-- Opacity -->
+            <div class="flex flex-col items-center">
+                <label for="opacitySlider" class="text-sm font-medium text-gray-700 mb-2">Opacity</label>
+                <input type="range" id="opacitySlider" min="0" max="100" value="50" class="w-full accent-blue-500 cursor-pointer">
+                <span id="opacityValue" class="text-xs text-gray-500 mt-1">50%</span>
+            </div>
+
+            <!-- Greyscale Toggle -->
+            <div class="flex flex-col items-center justify-center">
+                <label for="greyscaleToggle" class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="greyscaleToggle" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <span class="ml-3 text-sm font-medium text-gray-700">Greyscale Watermark</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Download Button -->
+        <div class="flex justify-center">
+            <button id="downloadButton" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Download Image
+            </button>
+        </div>
+
+        <!-- Message Box for Alerts (replaces alert() function) -->
+        <div id="messageBox" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+                <p id="messageText" class="text-gray-800 font-medium mb-4"></p>
+                <button id="closeMessage" class="bg-indigo-600 text-white py-2 px-4 rounded-xl hover:bg-indigo-700 transition-colors">OK</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const baseImageInput = document.getElementById('baseImageInput');
+            const watermarkImageInput = document.getElementById('watermarkImageInput');
+            const sizeSlider = document.getElementById('sizeSlider');
+            const sizeValueSpan = document.getElementById('sizeValue');
+            const opacitySlider = document.getElementById('opacitySlider');
+            const opacityValueSpan = document.getElementById('opacityValue');
+            const greyscaleToggle = document.getElementById('greyscaleToggle');
+            const downloadButton = document.getElementById('downloadButton');
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            const closeMessageButton = document.getElementById('closeMessage');
+
+            let baseImage = null;
+            let watermarkImage = null;
+
+            // Function to display a custom message box instead of alert()
+            const showMessage = (text) => {
+                messageText.textContent = text;
+                messageBox.classList.remove('hidden');
+            };
+
+            closeMessageButton.addEventListener('click', () => {
+                messageBox.classList.add('hidden');
+            });
+
+            // The main drawing function that updates the canvas
+            const drawWatermarkedImage = () => {
+                if (!baseImage) {
+                    canvas.width = 0;
+                    canvas.height = 0;
+                    return;
+                }
+
+                // Set canvas dimensions to the base image dimensions
+                canvas.width = baseImage.naturalWidth;
+                canvas.height = baseImage.naturalHeight;
+
+                // Draw the base image
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+
+                if (watermarkImage) {
+                    // Set opacity
+                    const opacity = opacitySlider.value / 100;
+                    ctx.globalAlpha = opacity;
+
+                    // Apply greyscale filter if toggled
+                    if (greyscaleToggle.checked) {
+                        ctx.filter = 'grayscale(100%)';
+                    } else {
+                        ctx.filter = 'none';
+                    }
+
+                    // Calculate watermark size based on slider value and base image dimensions
+                    const watermarkSizePercentage = sizeSlider.value / 100;
+                    const watermarkWidth = baseImage.width * watermarkSizePercentage;
+                    const watermarkHeight = (watermarkWidth / watermarkImage.naturalWidth) * watermarkImage.naturalHeight;
+
+                    // Position the watermark at the bottom-right corner with some padding
+                    const padding = 20; // in pixels
+                    const x = canvas.width - watermarkWidth - padding;
+                    const y = canvas.height - watermarkHeight - padding;
+
+                    // Draw the watermark
+                    ctx.drawImage(watermarkImage, x, y, watermarkWidth, watermarkHeight);
+
+                    // Reset global alpha and filter to not affect future drawings
+                    ctx.globalAlpha = 1.0;
+                    ctx.filter = 'none';
+                }
+            };
+
+            // Event listeners for file inputs
+            baseImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            baseImage = img;
+                            drawWatermarkedImage();
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    baseImage = null;
+                    drawWatermarkedImage();
+                }
+            });
+
+            watermarkImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            watermarkImage = img;
+                            drawWatermarkedImage();
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    watermarkImage = null;
+                    drawWatermarkedImage();
+                }
+            });
+
+            // Event listeners for controls
+            sizeSlider.addEventListener('input', (e) => {
+                sizeValueSpan.textContent = `${e.target.value}%`;
+                drawWatermarkedImage();
+            });
+
+            opacitySlider.addEventListener('input', (e) => {
+                opacityValueSpan.textContent = `${e.target.value}%`;
+                drawWatermarkedImage();
+            });
+
+            greyscaleToggle.addEventListener('change', () => {
+                drawWatermarkedImage();
+            });
+
+            // Event listener for the download button
+            downloadButton.addEventListener('click', () => {
+                if (!baseImage) {
+                    showMessage("Please select a main image first.");
+                    return;
+                }
+
+                // Create a temporary link element
+                const link = document.createElement('a');
+                link.download = 'watermarked_image.png';
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    </script>
+</body>
+</html>

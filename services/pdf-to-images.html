@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Images - UtilityBox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-4xl">
+        <button onclick="window.location.href='../index.html'" class="mb-6 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors duration-200">← Back to Services</button>
+        
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 text-center">PDF to Images</h1>
+        <p class="text-gray-600 mb-8 text-center">Convert PDF pages to ZIP file of images</p>
+
+        <!-- File Upload Section -->
+        <div class="mb-8">
+            <label for="pdf-input" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-200">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg class="w-12 h-12 mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                    <p class="text-xs text-gray-500">PDF files only</p>
+                </div>
+            </label>
+            <input type="file" id="pdf-input" accept=".pdf" class="hidden">
+        </div>
+        
+        <!-- Page Range Options -->
+        <div id="options-container" class="space-y-6 hidden">
+            <p class="text-gray-700 font-semibold text-lg">Choose an option:</p>
+
+            <!-- Radio Buttons and Side-by-Side Options -->
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                
+                <!-- Custom Page Range Option -->
+                <label for="radio-range" class="flex-1 cursor-pointer">
+                    <div id="range-card" class="bg-gray-50 p-6 rounded-xl border border-gray-200 transition-shadow duration-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-2 mb-3">
+                            <input type="radio" id="radio-range" name="download-option" value="range" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                            <h3 class="font-bold text-gray-800">Custom Page Range</h3>
+                        </div>
+                        <div id="range-input-group" class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-1">
+                                    <label class="block text-gray-600 text-sm mb-1" for="start-page">Start Page</label>
+                                    <input type="number" id="start-page" min="1" placeholder="e.g., 2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-gray-600 text-sm mb-1" for="end-page">End Page</label>
+                                    <input type="number" id="end-page" min="1" placeholder="e.g., 5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                                </div>
+                            </div>
+                            <button id="download-range-btn" class="w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Download Range as ZIP</button>
+                        </div>
+                    </div>
+                </label>
+
+                <!-- Single Page Download Option -->
+                <label for="radio-single" class="flex-1 cursor-pointer">
+                    <div id="single-card" class="bg-gray-50 p-6 rounded-xl border border-gray-200 transition-shadow duration-200 hover:shadow-lg">
+                        <div class="flex items-center space-x-2 mb-3">
+                            <input type="radio" id="radio-single" name="download-option" value="single" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500" checked>
+                            <h3 class="font-bold text-gray-800">Single Page Download</h3>
+                        </div>
+                        <div id="single-input-group" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-600 text-sm mb-1" for="single-page">Page Number</label>
+                                <input type="number" id="single-page" min="1" placeholder="e.g., 3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            </div>
+                            <button id="download-single-btn" class="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">Download Single Page</button>
+                        </div>
+                    </div>
+                </label>
+            </div>
+            
+            <!-- All Pages Download -->
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center">
+                <h3 class="font-bold text-gray-800 mb-3">Download all pages</h3>
+                <button id="download-all-btn" class="w-full px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">Download All Pages as ZIP</button>
+            </div>
+        </div>
+
+        <!-- Status and Loader Section -->
+        <div class="mt-6 hidden" id="status-box">
+            <div class="bg-blue-100 text-blue-800 p-4 rounded-xl flex items-center justify-between shadow-inner">
+                <p id="status-text" class="font-medium">Please select a file to begin.</p>
+                <div id="loader" class="hidden">
+                    <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        // PDF.js worker source must be explicitly set
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        let pdfDocument = null;
+        let pdfFilename = 'document';
+        let isProcessing = false;
+
+        const pdfInput = document.getElementById('pdf-input');
+        const startPageInput = document.getElementById('start-page');
+        const endPageInput = document.getElementById('end-page');
+        const singlePageInput = document.getElementById('single-page');
+        const radioRange = document.getElementById('radio-range');
+        const radioSingle = document.getElementById('radio-single');
+        const rangeCard = document.getElementById('range-card');
+        const singleCard = document.getElementById('single-card');
+        const downloadAllBtn = document.getElementById('download-all-btn');
+        const downloadRangeBtn = document.getElementById('download-range-btn');
+        const downloadSingleBtn = document.getElementById('download-single-btn');
+        const optionsContainer = document.getElementById('options-container');
+        const statusBox = document.getElementById('status-box');
+        const statusText = document.getElementById('status-text');
+        const loader = document.getElementById('loader');
+
+        // Function to update the status and loader state
+        function updateStatus(message, showLoader = false) {
+            statusBox.classList.remove('hidden');
+            statusText.textContent = message;
+            loader.classList.toggle('hidden', !showLoader);
+            isProcessing = showLoader;
+            // Disable all buttons when processing
+            downloadAllBtn.disabled = isProcessing;
+            downloadRangeBtn.disabled = isProcessing;
+            downloadSingleBtn.disabled = isProcessing;
+        }
+        
+        // Function to handle the file selection
+        pdfInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file || file.type !== 'application/pdf') {
+                updateStatus('Please select a valid PDF file.', false);
+                optionsContainer.classList.add('hidden');
+                return;
+            }
+
+            pdfFilename = file.name.replace(/\.pdf$/, '');
+            updateStatus('Processing PDF...', true);
+            optionsContainer.classList.add('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const pdfData = e.target.result;
+                try {
+                    const loadingTask = pdfjsLib.getDocument({ data: pdfData });
+                    pdfDocument = await loadingTask.promise;
+                    updateStatus(`PDF loaded successfully. Total pages: ${pdfDocument.numPages}`, false);
+                    optionsContainer.classList.remove('hidden');
+                    // Initialize the correct view based on default checked radio button
+                    toggleOptionView();
+                } catch (error) {
+                    console.error("Error loading PDF:", error);
+                    updateStatus('Failed to load PDF. Please try a different file.', false);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Function to show/hide the correct input fields based on radio button selection
+        function toggleOptionView() {
+            if (radioRange.checked) {
+                document.getElementById('range-input-group').classList.remove('hidden');
+                document.getElementById('single-input-group').classList.add('hidden');
+                rangeCard.classList.add('border-blue-500');
+                singleCard.classList.remove('border-green-500');
+            } else if (radioSingle.checked) {
+                document.getElementById('range-input-group').classList.add('hidden');
+                document.getElementById('single-input-group').classList.remove('hidden');
+                rangeCard.classList.remove('border-blue-500');
+                singleCard.classList.add('border-green-500');
+            }
+        }
+        
+        // Add listeners for radio button changes
+        radioRange.addEventListener('change', toggleOptionView);
+        radioSingle.addEventListener('change', toggleOptionView);
+
+        // Function to render a single page to a canvas and get a data URL
+        async function getPageImage(pageNumber) {
+            if (!pdfDocument || pageNumber < 1 || pageNumber > pdfDocument.numPages) {
+                return null;
+            }
+            const page = await pdfDocument.getPage(pageNumber);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport,
+            };
+            await page.render(renderContext).promise;
+            return canvas.toDataURL('image/png');
+        }
+
+        // Function to download a single image
+        downloadSingleBtn.addEventListener('click', async () => {
+            const pageNumber = parseInt(singlePageInput.value, 10);
+            if (!pdfDocument || isNaN(pageNumber) || pageNumber < 1 || pageNumber > pdfDocument.numPages) {
+                updateStatus('Please enter a valid page number.', false);
+                return;
+            }
+            updateStatus(`Generating image for page ${pageNumber}...`, true);
+            const imageUrl = await getPageImage(pageNumber);
+            if (imageUrl) {
+                const a = document.createElement('a');
+                a.href = imageUrl;
+                a.download = `${pdfFilename}_page_${pageNumber}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                updateStatus(`Page ${pageNumber} downloaded successfully.`, false);
+            } else {
+                updateStatus('Failed to generate image.', false);
+            }
+        });
+
+        // Function to create and download a zip file
+        async function downloadZip(start, end) {
+            if (!pdfDocument) return;
+
+            const zip = new JSZip();
+            const totalPages = end - start + 1;
+            
+            for (let i = start; i <= end; i++) {
+                updateStatus(`Processing page ${i} of ${pdfDocument.numPages}... (${((i - start) / totalPages * 100).toFixed(0)}%)`, true);
+                const imageUrl = await getPageImage(i);
+                if (imageUrl) {
+                    const base64Data = imageUrl.split(',')[1];
+                    zip.file(`${pdfFilename}_page_${i}.png`, base64Data, { base64: true });
+                }
+            }
+
+            updateStatus('Zipping files...', true);
+            const content = await zip.generateAsync({ type: "blob" });
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(content);
+            a.href = url;
+            a.download = `${pdfFilename}_pages_${start}-${end}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            updateStatus('Zip file created and downloaded successfully!', false);
+        }
+
+        // Event listener for downloading all pages
+        downloadAllBtn.addEventListener('click', () => {
+            if (pdfDocument) {
+                downloadZip(1, pdfDocument.numPages);
+            }
+        });
+
+        // Event listener for downloading a custom range
+        downloadRangeBtn.addEventListener('click', () => {
+            const start = parseInt(startPageInput.value, 10);
+            const end = parseInt(endPageInput.value, 10);
+
+            if (!pdfDocument || isNaN(start) || isNaN(end) || start < 1 || end > pdfDocument.numPages || start > end) {
+                updateStatus('Please enter a valid page range.', false);
+                return;
+            }
+            downloadZip(start, end);
+        });
+
+    </script>
+</body>
+</html>

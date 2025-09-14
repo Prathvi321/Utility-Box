@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Merger - UtilityBox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .file-card {
+            transition: transform 0.2s ease-in-out;
+            cursor: grab;
+        }
+        .file-card.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+        .file-card.drag-over {
+            border-color: #6366f1;
+            border-style: dashed;
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-4xl">
+        <button onclick="window.location.href='../index.html'" class="mb-6 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors duration-200">← Back to Services</button>
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">PDF Merger & Organizer</h1>
+            <p class="text-gray-600">Drag and drop files to reorder them, then merge and download</p>
+        </div>
+
+        <!-- File Upload Section -->
+        <label for="pdf-input" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-200 mb-6">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-12 h-12 mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                <p class="text-xs text-gray-500">Multiple PDF files supported</p>
+            </div>
+            <input id="pdf-input" type="file" multiple accept=".pdf" class="hidden">
+        </label>
+
+        <!-- PDF List Container -->
+        <div id="pdf-list" class="space-y-3 mb-6">
+            <!-- PDF cards will be dynamically added here -->
+        </div>
+
+        <!-- Status Message and Loading -->
+        <div id="status-container" class="mb-6 text-center">
+            <div id="loading-spinner" class="hidden flex justify-center items-center mb-4">
+                <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <p id="status-message" class="text-sm font-medium text-gray-600"></p>
+        </div>
+
+        <!-- Merge Options -->
+        <div class="pt-6 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input id="output-name" type="text" placeholder="Enter filename (e.g., merged.pdf)"
+                    class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200" />
+                <button id="merge-button"
+                    class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Merge & Download
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-xs text-gray-400 mt-8">
+            All PDF processing is done locally in your browser for privacy
+        </div>
+    </div>
+
+    <script>
+        const { PDFDocument } = PDFLib;
+        const fileInput = document.getElementById('pdf-input');
+        const pdfList = document.getElementById('pdf-list');
+        const mergeButton = document.getElementById('merge-button');
+        const outputNameInput = document.getElementById('output-name');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const statusMessage = document.getElementById('status-message');
+
+        let files = [];
+
+        function renderPdfList() {
+            pdfList.innerHTML = '';
+            mergeButton.disabled = files.length === 0;
+
+            if (files.length === 0) {
+                statusMessage.textContent = 'Please add PDF files to begin.';
+                return;
+            } else {
+                statusMessage.textContent = `${files.length} PDF file(s) ready to merge.`;
+            }
+
+            files.forEach((file, index) => {
+                const card = document.createElement('div');
+                card.draggable = true;
+                card.dataset.index = index;
+                card.className = 'file-card bg-white border-2 border-gray-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-200';
+                card.innerHTML = `
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div class="drag-handle text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </div>
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-gray-800 truncate" title="${file.name}">${file.name}</span>
+                    </div>
+                    <button class="remove-btn text-gray-400 hover:text-red-500 transition-colors p-1" data-index="${index}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                `;
+                pdfList.appendChild(card);
+            });
+        }
+
+        fileInput.addEventListener('change', (event) => {
+            const newFiles = Array.from(event.target.files).filter(file => file.type === 'application/pdf');
+            files = [...files, ...newFiles];
+            renderPdfList();
+        });
+
+        let dragSrcEl = null;
+
+        pdfList.addEventListener('dragstart', (e) => {
+            const card = e.target.closest('.file-card');
+            if (card) {
+                dragSrcEl = card;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', card.dataset.index);
+                card.classList.add('dragging');
+            }
+        });
+
+        pdfList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const card = e.target.closest('.file-card');
+            if (card && dragSrcEl !== card) {
+                e.dataTransfer.dropEffect = 'move';
+                card.classList.add('drag-over');
+            }
+        });
+        
+        pdfList.addEventListener('dragleave', (e) => {
+            const card = e.target.closest('.file-card');
+            if (card) {
+                card.classList.remove('drag-over');
+            }
+        });
+        
+        pdfList.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const dropTarget = e.target.closest('.file-card');
+            if (dropTarget && dragSrcEl !== dropTarget) {
+                const dragIndex = parseInt(dragSrcEl.dataset.index);
+                const dropIndex = parseInt(dropTarget.dataset.index);
+
+                const [movedItem] = files.splice(dragIndex, 1);
+                files.splice(dropIndex, 0, movedItem);
+
+                renderPdfList();
+            }
+            if (dropTarget) {
+                dropTarget.classList.remove('drag-over');
+            }
+            dragSrcEl.classList.remove('dragging');
+        });
+
+        pdfList.addEventListener('dragend', (e) => {
+            const cards = document.querySelectorAll('.file-card');
+            cards.forEach(card => card.classList.remove('dragging', 'drag-over'));
+            dragSrcEl = null;
+        });
+
+        pdfList.addEventListener('click', (event) => {
+            const removeBtn = event.target.closest('.remove-btn');
+            if (removeBtn) {
+                const index = parseInt(removeBtn.dataset.index);
+                files.splice(index, 1);
+                renderPdfList();
+            }
+        });
+
+        mergeButton.addEventListener('click', async () => {
+            if (files.length === 0) return;
+
+            loadingSpinner.classList.remove('hidden');
+            statusMessage.textContent = 'Merging PDFs... This may take a moment.';
+            mergeButton.disabled = true;
+
+            try {
+                const mergedPdf = await PDFDocument.create();
+
+                for (const file of files) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdfDoc = await PDFDocument.load(arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                    copiedPages.forEach(page => mergedPdf.addPage(page));
+                }
+
+                const pdfBytes = await mergedPdf.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const fileName = outputNameInput.value.trim() || 'merged.pdf';
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                statusMessage.textContent = `Successfully merged and downloaded: ${fileName}`;
+            } catch (error) {
+                console.error("Failed to merge PDFs:", error);
+                statusMessage.textContent = 'An error occurred during merging. Please try again.';
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                mergeButton.disabled = false;
+            }
+        });
+
+        renderPdfList();
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create UtilityBox Icons</title>
+</head>
+<body>
+    <canvas id="canvas192" width="192" height="192" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    <canvas id="canvas512" width="512" height="512" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    <br>
+    <button onclick="downloadIcons()">Download Icons</button>
+
+    <script>
+        function createIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#6366f1';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Toolbox shape
+            const boxSize = size * 0.6;
+            const x = (size - boxSize) / 2;
+            const y = (size - boxSize) / 2;
+            
+            // Main box
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x, y + boxSize * 0.2, boxSize, boxSize * 0.8);
+            
+            // Handle
+            ctx.fillRect(x + boxSize * 0.3, y, boxSize * 0.4, boxSize * 0.3);
+            
+            // Tools inside
+            ctx.fillStyle = '#6366f1';
+            const toolSize = size * 0.05;
+            ctx.fillRect(x + boxSize * 0.2, y + boxSize * 0.4, toolSize * 3, toolSize);
+            ctx.fillRect(x + boxSize * 0.2, y + boxSize * 0.6, toolSize * 2, toolSize);
+            ctx.fillRect(x + boxSize * 0.6, y + boxSize * 0.4, toolSize * 2, toolSize);
+        }
+        
+        createIcon(document.getElementById('canvas192'), 192);
+        createIcon(document.getElementById('canvas512'), 512);
+        
+        function downloadIcons() {
+            // Download 192x192
+            const canvas192 = document.getElementById('canvas192');
+            const link192 = document.createElement('a');
+            link192.download = 'icon-192x192.png';
+            link192.href = canvas192.toDataURL();
+            link192.click();
+            
+            // Download 512x512
+            const canvas512 = document.getElementById('canvas512');
+            const link512 = document.createElement('a');
+            link512.download = 'icon-512x512.png';
+            link512.href = canvas512.toDataURL();
+            link512.click();
+        }
+    </script>
+</body>
+</html>

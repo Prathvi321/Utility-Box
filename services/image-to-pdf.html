@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PDF - UtilityBox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-4xl">
+        <button onclick="window.location.href='../index.html'" class="mb-6 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors duration-200">← Back to Services</button>
+        
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 text-center">Image to PDF</h1>
+        <p class="text-gray-600 mb-8 text-center">Convert your images into a single PDF file easily and privately</p>
+
+        <div class="space-y-6">
+            <!-- File input area -->
+            <div class="mb-6">
+                <label for="imageInput" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-200">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-12 h-12 mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                        <p class="text-xs text-gray-500">Multiple images supported</p>
+                    </div>
+                </label>
+                <input type="file" id="imageInput" multiple accept="image/*" class="hidden">
+            </div>
+
+            <!-- PDF name input -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="pdfNameInput">PDF Filename</label>
+                <input type="text" id="pdfNameInput" placeholder="Enter PDF name" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200">
+            </div>
+
+            <!-- Conversion Button -->
+            <div class="flex justify-center mb-6">
+                <button id="convertBtn" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-indigo-400 disabled:cursor-not-allowed" disabled>
+                    Convert to PDF
+                </button>
+            </div>
+
+            <!-- Status message area -->
+            <div id="statusMessage" class="text-center text-sm font-medium text-gray-500 min-h-[1.5rem] mt-4">
+                Please select one or more images.
+            </div>
+
+            <!-- Image preview area -->
+            <div id="imagePreview" class="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <!-- Image previews will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.jsPDF = window.jspdf.jsPDF; // Set up global variable for jspdf
+
+        const imageInput = document.getElementById('imageInput');
+        const pdfNameInput = document.getElementById('pdfNameInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const imagePreview = document.getElementById('imagePreview');
+        const statusMessage = document.getElementById('statusMessage');
+
+        let imageFiles = [];
+
+        // Function to sanitize filename
+        function sanitizeFilename(filename) {
+            return filename.replace(/[\/\\?%*:|"<>]/g, '').trim();
+        }
+
+        // Handle file selection
+        imageInput.addEventListener('change', (event) => {
+            imageFiles = Array.from(event.target.files).filter(file => file.type.startsWith('image/'));
+            
+            // Set default PDF name from the first image
+            if (imageFiles.length > 0) {
+                const firstFileName = imageFiles[0].name.split('.').slice(0, -1).join('.');
+                pdfNameInput.value = sanitizeFilename(firstFileName) || 'converted-document';
+                convertBtn.disabled = false;
+                statusMessage.textContent = `${imageFiles.length} image(s) selected. Ready to convert!`;
+            } else {
+                pdfNameInput.value = '';
+                convertBtn.disabled = true;
+                statusMessage.textContent = 'Please select one or more images.';
+            }
+
+            // Display image previews
+            imagePreview.innerHTML = '';
+            imageFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'w-full h-32 rounded-lg overflow-hidden border border-gray-200 shadow-sm flex items-center justify-center';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = file.name;
+                    img.className = 'object-cover w-full h-full';
+                    imgContainer.appendChild(img);
+                    imagePreview.appendChild(imgContainer);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Handle PDF conversion
+        convertBtn.addEventListener('click', async () => {
+            if (imageFiles.length === 0) {
+                statusMessage.textContent = 'Please select images first.';
+                return;
+            }
+
+            statusMessage.textContent = 'Converting images to PDF...';
+            convertBtn.disabled = true;
+
+            try {
+                const doc = new jsPDF();
+                const margin = 10;
+                let pageNumber = 0;
+
+                for (const file of imageFiles) {
+                    const reader = new FileReader();
+                    const promise = new Promise((resolve) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(file);
+                    });
+                    const imageDataUrl = await promise;
+
+                    const img = new Image();
+                    img.src = imageDataUrl;
+                    const imgLoadPromise = new Promise((resolve) => {
+                        img.onload = () => resolve();
+                    });
+                    await imgLoadPromise;
+                    
+                    if (pageNumber > 0) {
+                        doc.addPage();
+                    }
+
+                    // Calculate dimensions to fit page while maintaining aspect ratio
+                    const pageWidth = doc.internal.pageSize.getWidth() - 2 * margin;
+                    const pageHeight = doc.internal.pageSize.getHeight() - 2 * margin;
+                    const imgWidth = img.width;
+                    const imgHeight = img.height;
+
+                    const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+                    const finalWidth = imgWidth * ratio;
+                    const finalHeight = imgHeight * ratio;
+
+                    const x = (doc.internal.pageSize.getWidth() - finalWidth) / 2;
+                    const y = (doc.internal.pageSize.getHeight() - finalHeight) / 2;
+
+                    doc.addImage(imageDataUrl, 'JPEG', x, y, finalWidth, finalHeight);
+                    pageNumber++;
+                }
+
+                let pdfName = pdfNameInput.value.trim();
+                if (!pdfName) {
+                    pdfName = 'document.pdf';
+                } else if (!pdfName.toLowerCase().endsWith('.pdf')) {
+                    pdfName += '.pdf';
+                }
+
+                doc.save(pdfName);
+                statusMessage.textContent = 'PDF generated successfully! Starting download.';
+
+            } catch (error) {
+                console.error("PDF conversion failed:", error);
+                statusMessage.textContent = 'Error converting to PDF. Please try again.';
+            } finally {
+                convertBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
