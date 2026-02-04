@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,15 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl">
-        <button onclick="window.location.href='../index.html'" class="mb-6 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors duration-200">← Back to Services</button>
-        
+        <button onclick="window.location.href='../index.html'"
+            class="mb-6 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors duration-200">←
+            Back to Services</button>
+
         <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 text-center">AI Text-to-Speech</h1>
         <p class="text-gray-600 mb-8 text-center">Enter your text and select a voice to generate high-quality audio</p>
 
@@ -23,35 +28,39 @@
             <!-- Text Input -->
             <div>
                 <label for="textInput" class="block text-sm font-medium text-gray-700 mb-2">Text to Convert</label>
-                <textarea id="textInput" 
-                          class="w-full h-32 px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200 resize-none"
-                          placeholder="Enter the text you want to convert to speech..."></textarea>
+                <textarea id="textInput"
+                    class="w-full h-32 px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200 resize-none"
+                    placeholder="Enter the text you want to convert to speech..."></textarea>
             </div>
 
             <!-- Voice Options -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="languageSelect" class="block text-sm font-medium text-gray-700 mb-2">Language</label>
-                    <select id="languageSelect" 
-                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200">
+                    <select id="languageSelect"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200">
                     </select>
                 </div>
                 <div>
                     <label for="voiceSelect" class="block text-sm font-medium text-gray-700 mb-2">Voice</label>
-                    <select id="voiceSelect" 
-                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200">
+                    <select id="voiceSelect"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200">
                     </select>
                 </div>
             </div>
 
             <!-- Generate Button -->
-            <button id="generateBtn" 
-                    class="w-full py-3 px-6 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+            <button id="generateBtn"
+                class="w-full py-3 px-6 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                 <span id="buttonText">Generate Speech</span>
                 <div id="loadingIndicator" class="hidden ml-3">
-                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
                     </svg>
                 </div>
             </button>
@@ -61,7 +70,8 @@
                 <div class="bg-gray-50 p-6 rounded-xl">
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">Generated Audio</h3>
                     <audio id="audioPlayer" controls class="w-full"></audio>
-                    <button id="downloadBtn" class="mt-4 w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors duration-200">
+                    <button id="downloadBtn"
+                        class="mt-4 w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors duration-200">
                         Download Audio
                     </button>
                 </div>
@@ -198,23 +208,14 @@
             setGeneratingState(true);
             audioContainer.classList.add('hidden');
 
-            const apiKey = "AIzaSyA8tiSykoaMjbRaOMWweYUfxxFVvutSEdg";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            // Call Netlify Function instead of direct API
+            const apiUrl = `/.netlify/functions/tts`;
 
             const payload = {
-                contents: [{
-                    parts: [{ text: text }]
-                }],
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        voiceConfig: {
-                            prebuiltVoiceConfig: { voiceName: voice }
-                        }
-                    }
-                },
-                model: "gemini-2.5-flash-preview-tts"
+                text: text,
+                voice: voice
             };
+
 
             let audioUrl = null;
             let retries = 0;
@@ -265,7 +266,7 @@
                 audioPlayer.src = audioUrl;
                 audioContainer.classList.remove('hidden');
                 showMessage('Audio generated successfully!', false);
-                
+
                 downloadBtn.onclick = () => {
                     const link = document.createElement('a');
                     link.href = audioUrl;
@@ -332,4 +333,5 @@
         populateLanguageAndVoiceOptions();
     </script>
 </body>
+
 </html>

@@ -54,6 +54,11 @@ const serviceData = {
         title: 'Image to PDF',
         description: 'Convert multiple images into a single PDF',
         keywords: ['image', 'pdf', 'convert', 'combine', 'merge', 'document', 'multiple']
+    },
+    'WhatsApp_pretyped': {
+        title: 'WhatsApp Generator',
+        description: 'Generate WhatsApp links and QR codes with pre-filled messages',
+        keywords: ['whatsapp', 'link', 'qr', 'code', 'message', 'chat', 'wa.me', 'pretyped']
     }
 };
 
