@@ -13,6 +13,7 @@ import ImageConverter from './pages/ImageConverter';
 import ImageToPdf from './pages/ImageToPdf';
 import ColorPicker from './pages/ColorPicker';
 import WatermarkAdder from './pages/WatermarkAdder';
+import RemoveBackground from './pages/RemoveBackground';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -43,6 +44,7 @@ function App() {
             <Route path="/image-to-pdf" element={<ImageToPdf />} />
             <Route path="/color-picker" element={<ColorPicker />} />
             <Route path="/watermark-adder" element={<WatermarkAdder />} />
+            <Route path="/remove-background" element={<RemoveBackground />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&
@@ -54,7 +56,8 @@ function App() {
               s.id !== 'image-converter' &&
               s.id !== 'image-to-pdf' &&
               s.id !== 'color-picker' &&
-              s.id !== 'watermark-adder'
+              s.id !== 'watermark-adder' &&
+              s.id !== 'remove-background'
             ).map(service => (
               <Route
                 key={service.id}

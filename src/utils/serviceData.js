@@ -8,7 +8,8 @@ import {
     Stamp,
     RefreshCw,
     FileText,
-    MessageCircle
+    MessageCircle,
+    Eraser
 } from 'lucide-react';
 
 export const services = [
@@ -91,5 +92,13 @@ export const services = [
         icon: MessageCircle,
         color: 'green',
         keywords: ['whatsapp', 'link', 'qr', 'code', 'message', 'chat', 'wa.me', 'pretyped']
+    },
+    {
+        id: 'remove-background',
+        title: 'Remove Background',
+        description: 'Remove image backgrounds automatically with AI',
+        icon: Eraser,
+        color: 'orange',
+        keywords: ['background', 'remove', 'ai', 'transparent', 'eraser', 'clear', 'cutout']
     }
 ];

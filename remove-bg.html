@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Background - UtilityBox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .checkerboard-bg {
+            background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+                linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+                linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-5xl">
+        <button onclick="window.location.href='../index.html'"
+            class="mb-6 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors duration-200">←
+            Back to Services</button>
+
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 text-center">Remove Background</h1>
+        <p class="text-gray-600 mb-8 text-center">Upload an image to automatically remove its background</p>
+
+        <!-- Upload Section -->
+        <div id="upload-section" class="mb-8">
+            <div class="file-input-wrapper">
+                <input type="file" id="file-input" accept="image/png, image/jpeg, image/jpg" class="hidden">
+                <label for="file-input"
+                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-200">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-12 h-12 mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag
+                            and drop</p>
+                        <p class="text-xs text-gray-500">PNG, JPG, JPEG (Max 4MB)</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Preview & Result Section -->
+        <div id="preview-section" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Original -->
+            <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3 text-center">Original Image</h3>
+                <div
+                    class="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-auto flex items-center justify-center min-h-[300px]">
+                    <img id="original-image" class="max-w-full max-h-[500px] object-contain" src="" alt="Original">
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="flex flex-col">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3 text-center">Background Removed</h3>
+                <div
+                    class="relative rounded-xl overflow-hidden border border-gray-200 checkerboard-bg flex items-center justify-center min-h-[300px]">
+                    <div id="result-placeholder" class="text-gray-400 text-sm">Processed image will appear here</div>
+                    <img id="result-image" class="hidden max-w-full max-h-[500px] object-contain relative z-10" src=""
+                        alt="Result">
+
+                    <!-- Loading Overlay -->
+                    <div id="processing-overlay"
+                        class="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center hidden">
+                        <svg class="animate-spin h-10 w-10 text-indigo-600 mb-3" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <p class="text-indigo-600 font-medium animate-pulse">Removing background...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="action-buttons" class="hidden flex flex-col sm:flex-row justify-center gap-4">
+            <button id="process-btn"
+                class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform active:scale-95">
+                Remove Background
+            </button>
+            <a id="download-btn" href="#" download="removed-bg.png"
+                class="hidden px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"></path>
+                </svg>
+                Download Image
+            </a>
+            <button id="reset-btn"
+                class="px-8 py-3 bg-white text-gray-700 font-semibold rounded-xl border border-gray-300 hover:bg-gray-50 transition-all duration-200">
+                Start Over
+            </button>
+        </div>
+
+        <!-- Status Message -->
+        <div id="message-box" class="hidden mt-6 p-4 rounded-xl text-center max-w-2xl mx-auto"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            const previewSection = document.getElementById('preview-section');
+            const originalImage = document.getElementById('original-image');
+            const resultImage = document.getElementById('result-image');
+            const resultPlaceholder = document.getElementById('result-placeholder');
+            const processingOverlay = document.getElementById('processing-overlay');
+            const processingText = processingOverlay.querySelector('p');
+            const actionButtons = document.getElementById('action-buttons');
+            const processBtn = document.getElementById('process-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const messageBox = document.getElementById('message-box');
+
+            let currentFile = null;
+
+            // Handle File Upload
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    processFile(file);
+                }
+            });
+
+            // Drag and Drop
+            const dropZone = document.querySelector('label[for="file-input"]');
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-indigo-500', 'bg-indigo-50');
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    processFile(file);
+                } else {
+                    showMessage('Please upload a valid image file (PNG, JPG).', 'error');
+                }
+            });
+
+            function processFile(file) {
+                // Warning if really huge, but we will try to compress
+                if (file.size > 20 * 1024 * 1024) {
+                    showMessage('File is very large (>20MB). Processing might be slow.', 'warning');
+                }
+
+                currentFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    originalImage.src = e.target.result;
+                    previewSection.classList.remove('hidden');
+                    actionButtons.classList.remove('hidden');
+                    document.getElementById('upload-section').classList.add('hidden');
+
+                    // Reset result view
+                    resultImage.classList.add('hidden');
+                    resultPlaceholder.classList.remove('hidden');
+                    downloadBtn.classList.add('hidden');
+                    processBtn.classList.remove('hidden');
+                    if (file.size <= 20 * 1024 * 1024) showMessage('', 'none'); // Clear messages if not huge warning
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Remove Background Action
+            processBtn.addEventListener('click', async () => {
+                if (!currentFile) return;
+
+                // UI Update
+                processingOverlay.classList.remove('hidden');
+                processingText.textContent = "Analyzing image...";
+                processBtn.disabled = true;
+                processBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                showMessage('', 'none');
+
+                try {
+                    let fileToSend = currentFile;
+
+                    // Check size and compress if needed (target 3.5MB to be safe for 4MB limit)
+                    if (currentFile.size > 3.5 * 1024 * 1024) {
+                        processingText.textContent = "Compressing image...";
+                        try {
+                            fileToSend = await compressImage(currentFile, 3.5);
+                            console.log(`Compressed from ${(currentFile.size / 1024 / 1024).toFixed(2)}MB to ${(fileToSend.size / 1024 / 1024).toFixed(2)}MB`);
+                        } catch (compError) {
+                            console.warn("Compression failed, trying original", compError);
+                            // Fallback to original, might fail upload but worth a shot? 
+                            // Or should we fail hard? Let's try original but warn.
+                        }
+                    }
+
+                    processingText.textContent = "Removing background...";
+
+                    // Convert file to Base64 (strip header)
+                    const base64Data = await toBase64(fileToSend);
+                    const base64Content = base64Data.split(',')[1];
+
+                    const response = await fetch('/.netlify/functions/remove-bg', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            image_file_b64: base64Content
+                        })
+                    });
+
+                    // Check if response is JSON
+                    const contentType = response.headers.get("content-type");
+                    let data;
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        data = await response.json();
+                    } else {
+                        // If not JSON (e.g., 500 HTML or text from Netlify infrastructure)
+                        const text = await response.text();
+                        console.error('Non-JSON response:', text);
+                        throw new Error(`Server Error (${response.status}): ${text.slice(0, 100)}...`);
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to remove background');
+                    }
+
+                    // Success
+                    const resultBase64 = `data:image/png;base64,${data.image_b64}`;
+                    resultImage.src = resultBase64;
+                    resultImage.classList.remove('hidden');
+                    resultPlaceholder.classList.add('hidden');
+
+                    downloadBtn.href = resultBase64;
+                    downloadBtn.download = `nobg_${currentFile.name.split('.')[0]}.png`;
+                    downloadBtn.classList.remove('hidden');
+                    downloadBtn.classList.add('flex'); // Allow flex display
+                    processBtn.classList.add('hidden');
+
+                    showMessage('Background removed successfully!', 'success');
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    showMessage(error.message || 'An error occurred. Please check if the API key is configured.', 'error');
+                } finally {
+                    processingOverlay.classList.add('hidden');
+                    processingText.textContent = "Removing background..."; // Reset text
+                    processBtn.disabled = false;
+                    processBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            });
+
+            // Reset Action
+            resetBtn.addEventListener('click', () => {
+                currentFile = null;
+                fileInput.value = '';
+                previewSection.classList.add('hidden');
+                actionButtons.classList.add('hidden');
+                document.getElementById('upload-section').classList.remove('hidden');
+                showMessage('', 'none');
+
+                // Clear images
+                originalImage.src = '';
+                resultImage.src = '';
+            });
+
+            // Helper: Convert File to Base64
+            const toBase64 = file => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+
+            // Helper: Compress Image to Target Size (MB)
+            async function compressImage(file, targetMB) {
+                const targetBytes = targetMB * 1024 * 1024;
+                const imageBitmap = await createImageBitmap(file);
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let width = imageBitmap.width;
+                let height = imageBitmap.height;
+                let quality = 0.9;
+
+                // Start with original dimensions
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(imageBitmap, 0, 0);
+
+                let compressedBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+
+                // Iteratively reduce
+                while (compressedBlob.size > targetBytes && (quality > 0.1 || width > 500)) {
+                    if (quality > 0.1) {
+                        quality -= 0.1;
+                    } else {
+                        // If quality is low, start shrinking dimensions
+                        width *= 0.9;
+                        height *= 0.9;
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(imageBitmap, 0, 0, width, height); // Draw scaled
+                        quality = 0.5; // Reset quality for new dimensions
+                    }
+
+                    compressedBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+                }
+
+                return compressedBlob;
+            }
+
+            function showMessage(msg, type) {
+                if (type === 'none') {
+                    messageBox.classList.add('hidden');
+                    return;
+                }
+                messageBox.textContent = msg;
+                messageBox.className = `mt-6 p-4 rounded-xl text-center max-w-2xl mx-auto ${type === 'error' ? 'bg-red-100 text-red-700' : (type === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-700')}`;
+                messageBox.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
