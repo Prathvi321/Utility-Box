@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900 bg-white;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Invoice Generator Tool CSS */
+.invoice-item-input::-webkit-outer-spin-button,
+.invoice-item-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.invoice-item-input:focus {
+  background-color: #f8fafc;
+  outline: none;
+  border-bottom: 2px solid #3b82f6;
+}
