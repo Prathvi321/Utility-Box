@@ -15,6 +15,7 @@ import ColorPicker from './pages/ColorPicker';
 import WatermarkAdder from './pages/WatermarkAdder';
 import RemoveBackground from './pages/RemoveBackground';
 import InvoiceGenerator from './pages/InvoiceGenerator';
+import FrameSnap from './pages/FrameSnap';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -48,6 +49,7 @@ function App() {
             <Route path="/color-picker" element={<ColorPicker />} />
             <Route path="/watermark-adder" element={<WatermarkAdder />} />
             <Route path="/remove-background" element={<RemoveBackground />} />
+            <Route path="/framesnap" element={<FrameSnap />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&
@@ -61,7 +63,8 @@ function App() {
               s.id !== 'color-picker' &&
               s.id !== 'watermark-adder' &&
               s.id !== 'remove-background' &&
-              s.id !== 'invoice-generator'
+              s.id !== 'invoice-generator' &&
+              s.id !== 'framesnap'
             ).map(service => (
               <Route
                 key={service.id}

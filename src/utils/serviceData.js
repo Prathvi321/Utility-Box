@@ -10,7 +10,8 @@ import {
     FileText,
     MessageCircle,
     Eraser,
-    Receipt
+    Receipt,
+    Video
 } from 'lucide-react';
 
 export const services = [
@@ -109,5 +110,13 @@ export const services = [
         icon: Receipt,
         color: 'indigo',
         keywords: ['invoice', 'gst', 'bill', 'receipt', 'generator', 'tax', 'business']
+    },
+    {
+        id: 'framesnap',
+        title: 'FrameSnap',
+        description: 'Extract high-quality frames from any video instantly.',
+        icon: Video,
+        color: 'indigo',
+        keywords: ['video', 'frame', 'extract', 'snapshot', 'images', 'mp4', 'framesnap']
     }
 ];

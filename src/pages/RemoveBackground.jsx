@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Eraser, Upload, Download, RefreshCw, AlertCircle, Loader2 } from 'lucide-react';
+import { Eraser, Upload, Download, RefreshCw, AlertCircle, Loader2, Image as ImageIcon, Sparkles, Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import DropZone from '../components/DropZone';
 
 const RemoveBackground = () => {
@@ -106,122 +107,184 @@ const RemoveBackground = () => {
         setOriginalPreview(null);
         setResultImage(null);
         setError(null);
+        setStatus('');
     };
 
     return (
-        <div className="w-full">
-            <div className="text-center mb-8">
-                <div className="bg-orange-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-orange-600">
-                    <Eraser size={32} />
+        <div className="w-full h-full flex flex-col lg:flex-row gap-8 lg:gap-12 animate-in fade-in duration-500">
+            {/* Left Pane: Configuration & Upload */}
+            <div className="w-full lg:w-[460px] flex-shrink-0 flex flex-col">
+                <div className="mb-8">
+                    <div className="bg-gradient-to-br from-orange-100 to-red-100 w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-white">
+                        <Eraser size={36} className="text-orange-600" />
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Background <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">Eraser</span></h1>
+                    <p className="text-lg text-gray-600 font-medium">Instantly remove backgrounds from any image using powerful AI.</p>
                 </div>
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Remove Background</h1>
-                <p className="text-gray-600">Automatically remove image backgrounds with AI</p>
+
+                <div className="bg-white/60 backdrop-blur-2xl p-8 rounded-[2rem] shadow-sm border border-white flex-1 flex flex-col justify-between relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100/50 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="relative z-10 flex-1 flex flex-col">
+                        <h3 className="text-xs uppercase tracking-widest font-bold text-gray-400 mb-6 flex items-center gap-2">
+                            <Sparkles size={14} /> AI Processing
+                        </h3>
+
+                        <AnimatePresence mode="wait">
+                            {!file ? (
+                                <motion.div key="upload" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="flex-1 flex flex-col justify-center">
+                                    <DropZone
+                                        onFileDrop={handleUpload}
+                                        accept="image/*"
+                                        icon={Upload}
+                                        title="Select Image"
+                                        subtitle="JPG, PNG, WebP"
+                                        colorClass="orange"
+                                    />
+                                    <p className="text-xs text-center text-gray-500 font-medium mt-4">For best results, upload images with a clear subject.</p>
+                                </motion.div>
+                            ) : (
+                                <motion.div key="original" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex-1 flex flex-col">
+                                    <div className="relative flex-1 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden flex flex-col items-center justify-center p-2 min-h-[240px]">
+                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-600 shadow-sm border border-gray-100 z-10">
+                                            Original
+                                        </div>
+                                        <img src={originalPreview} alt="Original" className="w-full h-full object-contain rounded-xl" />
+                                    </div>
+
+                                    <div className="mt-6 space-y-3">
+                                        <div className="flex items-center gap-3 bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                                            <ImageIcon size={20} className="text-orange-500 min-w-5 shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-gray-900 truncate">{file.name}</p>
+                                                <p className="text-xs font-medium text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                            </div>
+                                            <button
+                                                onClick={handleReset}
+                                                disabled={isProcessing}
+                                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-gray-400 hover:text-red-500 shadow-sm border border-gray-100 transition-colors shrink-0"
+                                                title="Change Image"
+                                            >
+                                                <RefreshCw size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        <AnimatePresence>
+                            {error && (
+                                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="mt-4 p-4 bg-red-50 border border-red-100 text-red-700 rounded-2xl flex items-start gap-3 text-sm font-semibold">
+                                    <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
+                                    <span>{error}</span>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    <div className="mt-8 relative z-10 border-t border-gray-100/50 pt-8 shrink-0">
+                        <button
+                            onClick={handleRemoveBackground}
+                            disabled={!file || isProcessing || resultImage}
+                            className={`w-full py-4 px-6 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 text-lg group ${file && !isProcessing && !resultImage
+                                    ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-xl shadow-orange-200 hover:shadow-orange-300 scale-100'
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed scale-[0.98]'
+                                }`}
+                        >
+                            {isProcessing ? <Loader2 className="animate-spin w-6 h-6" /> : <Sparkles className="w-6 h-6 group-hover:scale-110 transition-transform" />}
+                            {isProcessing ? status : resultImage ? 'Processing Complete' : 'Remove Background'}
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div className="max-w-6xl mx-auto space-y-8">
-                {/* Upload Section */}
-                {!file && (
-                    <DropZone
-                        onFileDrop={handleUpload}
-                        accept="image/*"
-                        icon={Upload}
-                        description="JPG, PNG, WebP supported"
-                        title="Upload Image"
-                        subtitle=""
-                        colorClass="orange"
-                    />
-                )}
-
-                {/* Edit Section */}
-                {file && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Original */}
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-semibold text-gray-700">Original</h3>
-                                <button onClick={handleReset} className="text-sm text-red-500 hover:underline">
-                                    Change Image
-                                </button>
-                            </div>
-                            <div className="relative aspect-square md:aspect-video bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                                <img src={originalPreview} alt="Original" className="max-w-full max-h-full object-contain" />
-                            </div>
+            {/* Right Pane: Result */}
+            <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[2.5rem] border-2 border-dashed border-gray-200/80 p-6 lg:p-10 flex flex-col relative overflow-hidden group min-h-[500px]">
+                <div className="flex items-center justify-between mb-6 px-2 shrink-0">
+                    <h3 className="text-2xl font-bold text-gray-900">Result</h3>
+                    {resultImage && (
+                        <div className="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-black tracking-wide flex items-center gap-2 border border-green-200">
+                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            Ready
                         </div>
+                    )}
+                </div>
 
-                        {/* Result */}
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                            <h3 className="font-semibold text-gray-700 mb-4 flex justify-between items-center">
-                                Result
-                                {isProcessing && <span className="text-sm font-normal text-orange-600 animate-pulse">{status}</span>}
-                            </h3>
-
-                            <div className="relative aspect-square md:aspect-video bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden checkerboard-bg">
-                                {resultImage ? (
-                                    <img src={resultImage} alt="No Background" className="max-w-full max-h-full object-contain z-10" />
-                                ) : (
-                                    <div className="text-gray-400 flex flex-col items-center">
-                                        {isProcessing ? (
-                                            <Loader2 className="animate-spin mb-2" size={32} />
-                                        ) : (
-                                            <div className="text-center p-6">
-                                                <p>Preview will appear here</p>
-                                            </div>
-                                        )}
+                <div className="flex-1 relative bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+                    {!resultImage && !isProcessing ? (
+                        <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-gray-50/50">
+                            <div className="w-24 h-24 rounded-full bg-orange-50 flex items-center justify-center mb-6">
+                                <Eraser className="w-12 h-12 text-orange-300" />
+                            </div>
+                            <h4 className="text-xl font-bold text-gray-800 mb-2">Awaiting Image</h4>
+                            <p className="text-gray-500 font-medium max-w-sm">Upload an image and click "Remove Background" to see the magic happen.</p>
+                        </div>
+                    ) : (
+                        <div className="flex-1 relative flex items-center justify-center checkerboard-bg overflow-hidden p-6 group/result">
+                            {isProcessing ? (
+                                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
+                                    <div className="w-20 h-20 bg-white rounded-2xl shadow-xl flex items-center justify-center mb-6 border border-orange-100 relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-orange-50 animate-pulse" />
+                                        <Loader2 className="w-10 h-10 text-orange-500 animate-spin relative z-10" />
                                     </div>
+                                    <h4 className="text-lg font-bold text-gray-900 mb-1">AI Magic in Progress</h4>
+                                    <p className="text-sm font-medium text-orange-600 animate-pulse">{status}</p>
+                                </div>
+                            ) : null}
+
+                            <AnimatePresence>
+                                {resultImage && (
+                                    <motion.img
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        src={resultImage}
+                                        alt="Processed"
+                                        className="max-w-full max-h-full object-contain relative z-10 drop-shadow-2xl"
+                                    />
                                 )}
-                            </div>
+                            </AnimatePresence>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Actions */}
-                {file && (
-                    <div className="flex flex-col items-center gap-4">
-                        {error && (
-                            <div className="p-4 bg-red-100 text-red-700 rounded-xl flex items-center gap-2 max-w-2xl text-center">
-                                <AlertCircle size={20} className="shrink-0" />
-                                {error}
-                            </div>
-                        )}
-
-                        {!resultImage ? (
-                            <button
-                                onClick={handleRemoveBackground}
-                                disabled={isProcessing}
-                                className="px-8 py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    {/* Download Bar for Result */}
+                    <AnimatePresence>
+                        {resultImage && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-white border-t border-gray-100 p-6 flex flex-col sm:flex-row items-center gap-4 shrink-0"
                             >
-                                {isProcessing ? <Loader2 className="animate-spin" /> : <Eraser />}
-                                Remove Background
-                            </button>
-                        ) : (
-                            <div className="flex gap-4">
                                 <a
                                     href={resultImage}
-                                    download={`nobg_${file.name.split('.')[0]}.png`}
-                                    className="px-8 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors shadow-lg flex items-center gap-2"
+                                    download={`nobg_${file?.name?.split('.')[0] || 'image'}.png`}
+                                    className="flex-1 w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl shadow-gray-900/20 hover:shadow-gray-900/40 hover:-translate-y-1"
                                 >
-                                    <Download /> Download HD
+                                    <Download size={20} />
+                                    Download Transparent PNG
                                 </a>
                                 <button
                                     onClick={handleReset}
-                                    className="px-8 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2"
+                                    className="w-full sm:w-auto px-8 py-4 bg-orange-50 text-orange-600 font-bold rounded-2xl hover:bg-orange-100 transition-colors flex items-center justify-center gap-3 border border-orange-200"
                                 >
-                                    <RefreshCw size={20} /> Start Over
+                                    <Plus size={20} />
+                                    New Image
                                 </button>
-                            </div>
+                            </motion.div>
                         )}
-                    </div>
-                )}
+                    </AnimatePresence>
+                </div>
             </div>
 
             <style>{`
                 .checkerboard-bg {
-                    background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
-                        linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
-                        linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
-                        linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+                    background-image: linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
+                        linear-gradient(-45deg, #f3f4f6 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #f3f4f6 75%),
+                        linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
                     background-size: 20px 20px;
                     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+                    background-color: white;
                 }
             `}</style>
         </div>

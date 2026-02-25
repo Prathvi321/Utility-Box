@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useRef } from 'react';
 import { Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const DropZone = ({
     onFileDrop,
@@ -56,24 +57,22 @@ const DropZone = ({
             } else {
                 onFileDrop(e.target.files[0]);
             }
-            // Reset the input value so the same file can be selected again if needed
             e.target.value = null;
         }
     };
 
-    const getBorderColorClass = () => {
-        if (isDragging) {
-            return `border-${colorClass}-500 bg-${colorClass}-50 ring-4 ring-${colorClass}-100`;
-        }
-        return `border-gray-300 hover:border-${colorClass}-500 hover:bg-${colorClass}-50`;
+    const colorVariants = {
+        indigo: { text: 'text-indigo-500', bg: 'bg-indigo-50/50', border: 'border-indigo-400', ring: 'ring-indigo-100' },
+        purple: { text: 'text-purple-500', bg: 'bg-purple-50/50', border: 'border-purple-400', ring: 'ring-purple-100' },
+        emerald: { text: 'text-emerald-500', bg: 'bg-emerald-50/50', border: 'border-emerald-400', ring: 'ring-emerald-100' },
+        rose: { text: 'text-rose-500', bg: 'bg-rose-50/50', border: 'border-rose-400', ring: 'ring-rose-100' },
+        blue: { text: 'text-blue-500', bg: 'bg-blue-50/50', border: 'border-blue-400', ring: 'ring-blue-100' },
+        orange: { text: 'text-orange-500', bg: 'bg-orange-50/50', border: 'border-orange-400', ring: 'ring-orange-100' },
+        cyan: { text: 'text-cyan-500', bg: 'bg-cyan-50/50', border: 'border-cyan-400', ring: 'ring-cyan-100' },
+        teal: { text: 'text-teal-500', bg: 'bg-teal-50/50', border: 'border-teal-400', ring: 'ring-teal-100' },
     };
 
-    const getIconColorClass = () => {
-        if (isDragging) {
-            return `text-${colorClass}-500 scale-110`;
-        }
-        return `text-gray-400`;
-    };
+    const currentColors = colorVariants[colorClass] || colorVariants.indigo;
 
     return (
         <div className="relative text-center w-full">
@@ -85,24 +84,48 @@ const DropZone = ({
                 ref={fileInputRef}
                 className="hidden"
             />
-            <div
+            <motion.div
                 onDragEnter={handleDragEnter}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current.click()}
-                className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ease-in-out ${getBorderColorClass()}`}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                animate={{
+                    borderColor: isDragging ? 'var(--tw-colors-indigo-400)' : 'var(--tw-colors-gray-200)',
+                    backgroundColor: isDragging ? 'rgba(238, 242, 255, 0.5)' : '#ffffff',
+                }}
+                className={`flex flex-col items-center justify-center w-full min-h-[16rem] border-2 border-dashed rounded-[2rem] cursor-pointer transition-shadow duration-300 ease-in-out bg-white/50 backdrop-blur-sm ${isDragging
+                        ? `${currentColors.border} ${currentColors.bg} ring-4 ${currentColors.ring} shadow-lg shadow-${colorClass}-100/50`
+                        : `border-gray-200 hover:${currentColors.border} hover:shadow-md`
+                    }`}
             >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6 pointer-events-none">
-                    <Icon className={`w-12 h-12 mb-4 transition-transform duration-300 ${getIconColorClass()}`} />
-                    <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">{title}</span> {subtitle}
+                <div className="flex flex-col items-center justify-center p-8 pointer-events-none">
+                    <motion.div
+                        animate={{
+                            y: isDragging ? -10 : 0,
+                            scale: isDragging ? 1.1 : 1
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className={`w-20 h-20 mb-6 rounded-3xl flex items-center justify-center ${isDragging ? `bg-${colorClass}-100 ${currentColors.text}` : 'bg-gray-50 text-gray-400'
+                            } shadow-inner bg-white/50 backdrop-blur-md border border-white`}
+                    >
+                        <Icon strokeWidth={1.5} className="w-10 h-10" />
+                    </motion.div>
+
+                    <h3 className="mb-2 text-xl font-semibold text-gray-800 tracking-tight">
+                        {title}
+                    </h3>
+                    <p className="mb-4 text-sm font-medium text-gray-500">
+                        {subtitle}
                     </p>
+
                     {description && (
-                        <p className="text-xs text-gray-500">{description}</p>
+                        <p className="text-xs text-gray-400 font-medium max-w-xs">{description}</p>
                     )}
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };
