@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Video, UploadCloud, Settings, Sparkles, DownloadCloud, Archive, Eye, Download, AlertCircle, Images } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import JSZip from 'jszip';
@@ -403,31 +404,53 @@ const FrameSnap = () => {
             )}
 
             {/* View Modal */}
-            <AnimatePresence>
-                {previewModalFrame && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
-                        onClick={() => setPreviewModalFrame(null)}
-                    >
-                        <button className="absolute top-6 right-6 text-white bg-white/10 p-3 rounded-full hover:bg-white/20 transition-all hover:rotate-90">
-                            <Eye className="w-0 h-0 hidden" /> {/* Dummy icon reference, X is default icon for modal dismiss usually, lets just use a generic style */}
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                        <motion.img
-                            initial={{ scale: 0.9, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.9, y: 20 }}
-                            src={previewModalFrame.dataUrl}
-                            className="max-w-full max-h-full object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
-                            alt="Full Screen Preview"
-                            onClick={(e) => e.stopPropagation()}
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {typeof document !== 'undefined' && createPortal(
+                <AnimatePresence>
+                    {previewModalFrame && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8"
+                            onClick={() => setPreviewModalFrame(null)}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.9, y: 20 }}
+                                className="bg-white rounded-[2rem] shadow-2xl overflow-hidden max-w-4xl w-full flex flex-col relative"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900">Frame Preview</h3>
+                                        <p className="text-sm font-medium text-gray-500 mt-1">Found at {previewModalFrame.timestamp}s</p>
+                                    </div>
+                                    <button className="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 p-3 rounded-full transition-colors active:scale-95" onClick={() => setPreviewModalFrame(null)}>
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
+                                <div className="bg-gray-50/50 p-6 flex items-center justify-center min-h-[40vh] max-h-[60vh] overflow-hidden">
+                                    <img
+                                        src={previewModalFrame.dataUrl}
+                                        className="max-w-full max-h-full object-contain rounded-xl shadow-sm border border-gray-200/50 bg-white"
+                                        alt="Frame Preview"
+                                    />
+                                </div>
+                                <div className="p-6 bg-white border-t border-gray-100 flex justify-end gap-3">
+                                    <button onClick={() => setPreviewModalFrame(null)} className="px-6 py-3 rounded-xl text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors active:scale-95">
+                                        Close
+                                    </button>
+                                    <button onClick={() => downloadSingleFrame(previewModalFrame)} className="px-6 py-3 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors flex items-center gap-2 active:scale-95 shadow-lg shadow-blue-500/20">
+                                        <Download className="w-5 h-5" /> Download Frame
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
 
         </div>
     );
