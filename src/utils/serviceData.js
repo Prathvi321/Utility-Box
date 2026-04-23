@@ -11,7 +11,8 @@ import {
     MessageCircle,
     Eraser,
     Receipt,
-    Video
+    Video,
+    Database
 } from 'lucide-react';
 
 export const services = [
@@ -118,5 +119,13 @@ export const services = [
         icon: Video,
         color: 'indigo',
         keywords: ['video', 'frame', 'extract', 'snapshot', 'images', 'mp4', 'framesnap']
+    },
+    {
+        id: 'database-converter',
+        title: 'Database Converter',
+        description: 'Convert SQL ↔ JSON instantly in your browser.',
+        icon: Database,
+        color: 'blue',
+        keywords: ['database', 'sql', 'json', 'convert', 'data', 'bridge']
     }
 ];

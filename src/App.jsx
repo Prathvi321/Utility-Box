@@ -16,6 +16,7 @@ import WatermarkAdder from './pages/WatermarkAdder';
 import RemoveBackground from './pages/RemoveBackground';
 import InvoiceGenerator from './pages/InvoiceGenerator';
 import FrameSnap from './pages/FrameSnap';
+import DatabaseConverter from './pages/DatabaseConverter';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -50,6 +51,7 @@ function App() {
             <Route path="/watermark-adder" element={<WatermarkAdder />} />
             <Route path="/remove-background" element={<RemoveBackground />} />
             <Route path="/framesnap" element={<FrameSnap />} />
+            <Route path="/database-converter" element={<DatabaseConverter />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&
@@ -64,7 +66,8 @@ function App() {
               s.id !== 'watermark-adder' &&
               s.id !== 'remove-background' &&
               s.id !== 'invoice-generator' &&
-              s.id !== 'framesnap'
+              s.id !== 'framesnap' &&
+              s.id !== 'database-converter'
             ).map(service => (
               <Route
                 key={service.id}
