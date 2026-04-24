@@ -17,6 +17,7 @@ import RemoveBackground from './pages/RemoveBackground';
 import InvoiceGenerator from './pages/InvoiceGenerator';
 import FrameSnap from './pages/FrameSnap';
 import DatabaseConverter from './pages/DatabaseConverter';
+import DnsTracker from './pages/DnsTracker';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -52,6 +53,7 @@ function App() {
             <Route path="/remove-background" element={<RemoveBackground />} />
             <Route path="/framesnap" element={<FrameSnap />} />
             <Route path="/database-converter" element={<DatabaseConverter />} />
+            <Route path="/dns-tracker" element={<DnsTracker />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&
@@ -67,7 +69,8 @@ function App() {
               s.id !== 'remove-background' &&
               s.id !== 'invoice-generator' &&
               s.id !== 'framesnap' &&
-              s.id !== 'database-converter'
+              s.id !== 'database-converter' &&
+              s.id !== 'dns-tracker'
             ).map(service => (
               <Route
                 key={service.id}

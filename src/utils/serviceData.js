@@ -12,7 +12,8 @@ import {
     Eraser,
     Receipt,
     Video,
-    Database
+    Database,
+    Globe
 } from 'lucide-react';
 
 export const services = [
@@ -127,5 +128,13 @@ export const services = [
         icon: Database,
         color: 'blue',
         keywords: ['database', 'sql', 'json', 'convert', 'data', 'bridge']
+    },
+    {
+        id: 'dns-tracker',
+        title: 'DNS Tracker',
+        description: 'Track and verify DNS records globally.',
+        icon: Globe,
+        color: 'blue',
+        keywords: ['dns', 'domain', 'tracker', 'records', 'whois', 'lookup', 'security']
     }
 ];

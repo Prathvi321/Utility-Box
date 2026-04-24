@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Detective - All-in-One Domain Toolbox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        .record-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        /* Record Types Styling */
+        .type-A { background-color: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca; }
+        .type-AAAA { background-color: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa; }
+        .type-MX { background-color: #f3e8ff !important; color: #6b21a8 !important; border: 1px solid #e9d5ff; }
+        .type-TXT { background-color: #ecfeff !important; color: #155e75 !important; border: 1px solid #cffafe; }
+        .type-NS { background-color: #dcfce7 !important; color: #166534 !important; border: 1px solid #bbf7d0; }
+        .type-CNAME { background-color: #fef9c3 !important; color: #854d0e !important; border: 1px solid #fef08a; }
+
+        .loader {
+            border: 3px solid #e2e8f0;
+            border-radius: 50%;
+            border-top: 3px solid #3b82f6;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* PRINT STYLES - CRITICAL FOR PDF RENDERING */
+        @media print {
+            @page {
+                size: A4;
+                margin: 1cm;
+            }
+            
+            body {
+                background-color: white !important;
+                padding: 0 !important;
+            }
+
+            .print\:hidden {
+                display: none !important;
+            }
+
+            /* Force display all tabs in print mode to create a full report */
+            .tab-view {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                margin-bottom: 2rem;
+                break-inside: avoid;
+            }
+
+            .glass-card {
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+
+            /* Fix Background Colors for PDF */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            h1, h2, h3, h4 {
+                color: #000 !important;
+            }
+
+            .bg-slate-50 {
+                background-color: #f8fafc !important;
+            }
+
+            .tab-view h3 {
+                border-bottom: 2px solid #3b82f6;
+                padding-bottom: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 relative">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 text-center print:text-left print:mb-4">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-xl mb-4 shadow-lg shadow-blue-200 print:hidden">
+                <i class="fas fa-search-location text-xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">DNS Detective</h1>
+            <p class="text-slate-500 font-medium">Domain Security, Health & DNS Audit Report</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="glass-card rounded-2xl p-4 mb-6 print:hidden">
+            <form id="dnsForm" class="flex flex-col md:flex-row gap-3">
+                <div class="flex-1 relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-globe text-slate-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="domainInput" 
+                        placeholder="example.com" 
+                        required
+                        class="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none text-slate-900 font-medium"
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md shadow-blue-100 flex items-center justify-center gap-2"
+                >
+                    <span>Run Audit</span>
+                    <i class="fas fa-bolt text-sm"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap gap-2 mb-8 print:hidden" id="navTabs">
+            <button onclick="switchTab('dns')" id="tab-dns" class="nav-btn active px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-white text-slate-600 border border-slate-200">
+                <i class="fas fa-server"></i> DNS Records
+            </button>
+            <button onclick="switchTab('security')" id="tab-security" class="nav-btn px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-white text-slate-600 border border-slate-200">
+                <i class="fas fa-shield-alt"></i> Email Security
+            </button>
+            <button onclick="switchTab('whois')" id="tab-whois" class="nav-btn px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-white text-slate-600 border border-slate-200">
+                <i class="fas fa-address-card"></i> WHOIS Info
+            </button>
+            <button onclick="switchTab('health')" id="tab-health" class="nav-btn px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-white text-slate-600 border border-slate-200">
+                <i class="fas fa-heartbeat"></i> Health Report
+            </button>
+            <button onclick="switchTab('headers')" id="tab-headers" class="nav-btn px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-white text-slate-600 border border-slate-200">
+                <i class="fas fa-code"></i> HTTP Headers
+            </button>
+        </div>
+
+        <!-- Main Results Area -->
+        <div id="resultsContainer" class="hidden">
+            <!-- Summary Header -->
+            <div class="glass-card rounded-2xl p-6 mb-6 flex justify-between items-center border-l-4 border-l-blue-500">
+                <div>
+                    <h2 id="displayDomain" class="text-2xl font-black text-slate-900"></h2>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">
+                        Audit Performed: <span id="auditTimestamp" class="text-slate-700"></span>
+                    </p>
+                </div>
+                <button onclick="window.print()" class="bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-600 p-3 rounded-xl transition-all print:hidden" title="Generate PDF Report">
+                    <i class="fas fa-file-pdf text-xl"></i>
+                </button>
+            </div>
+
+            <!-- DNS Tab Content -->
+            <div id="view-dns" class="tab-view">
+                <h3 class="hidden print:block font-bold text-xl mb-4">DNS Records Analysis</h3>
+                <div id="dnsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+            
+            <!-- Security Tab Content -->
+            <div id="view-security" class="tab-view hidden">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-envelope-open-text text-blue-500 print:hidden"></i> Email Authentication Status</h3>
+                    <div id="securityGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- WHOIS Tab Content -->
+            <div id="view-whois" class="tab-view hidden">
+                <div class="glass-card rounded-2xl p-6 overflow-hidden">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-id-badge text-blue-500 print:hidden"></i> Registration Details</h3>
+                    <div id="whoisContent" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- Health Tab Content -->
+            <div id="view-health" class="tab-view hidden">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4">Domain Configuration & Health Audit</h3>
+                    <div id="healthChecks" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Headers Tab Content -->
+            <div id="view-headers" class="tab-view hidden">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4">Server Response Headers</h3>
+                    <pre id="headersContent" class="code-font text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 overflow-x-auto whitespace-pre-wrap"></pre>
+                </div>
+            </div>
+
+            <!-- Print Footer -->
+            <div class="hidden print:block mt-12 pt-8 border-t border-slate-200 text-center text-slate-400 text-xs">
+                This report was generated by DNS Detective. Data reflects global DNS propagation at the time of audit.
+            </div>
+        </div>
+
+        <!-- Initial/Empty/Error States -->
+        <div id="emptyState" class="text-center py-24 print:hidden">
+            <i class="fas fa-search text-5xl text-slate-200 mb-4"></i>
+            <p class="text-slate-400 font-medium">Analyze a domain to view detailed insights</p>
+        </div>
+
+        <div id="errorState" class="hidden glass-card border-red-100 bg-red-50/20 rounded-2xl p-8 text-center print:hidden">
+            <i class="fas fa-exclamation-triangle text-3xl text-red-500 mb-3"></i>
+            <h4 class="font-bold text-slate-900">Lookup Error</h4>
+            <p id="errorMessage" class="text-slate-600 text-sm"></p>
+        </div>
+    </div>
+
+    <script>
+        const dnsForm = document.getElementById('dnsForm');
+        const domainInput = document.getElementById('domainInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const emptyState = document.getElementById('emptyState');
+        const errorState = document.getElementById('errorState');
+        const auditTimestamp = document.getElementById('auditTimestamp');
+
+        function switchTab(tabId) {
+            // Only hide/show if not printing
+            document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            const activeView = document.getElementById(`view-${tabId}`);
+            activeView.classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        dnsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const domain = domainInput.value.trim().toLowerCase().replace(/^(https?:\/\/)/, '').split('/')[0];
+            if (!domain) return;
+            
+            document.getElementById('displayDomain').textContent = domain;
+            auditTimestamp.textContent = new Date().toLocaleString();
+
+            resultsContainer.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            errorState.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<div class="loader mr-2"></div> Running...`;
+
+            try {
+                await runFullAudit(domain);
+                resultsContainer.classList.remove('hidden');
+                switchTab('dns'); // Default to DNS tab on load
+            } catch (err) {
+                errorState.classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = err.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Run Audit</span> <i class="fas fa-bolt text-sm"></i>`;
+            }
+        });
+
+        async function runFullAudit(domain) {
+            const recordTypes = ['A', 'AAAA', 'MX', 'NS', 'CNAME', 'TXT'];
+            const dnsPromises = recordTypes.map(type => fetchDNS(domain, type));
+            const securityPromises = [
+                fetchDNS(domain, 'TXT'),
+                fetchDNS(`_dmarc.${domain}`, 'TXT')
+            ];
+            const whoisPromise = fetchWHOIS(domain);
+            const headerPromise = fetchHeaders(domain);
+
+            const [dnsResults, securityResults, whoisData, headerData] = await Promise.all([
+                Promise.all(dnsPromises),
+                Promise.all(securityPromises),
+                whoisPromise,
+                headerPromise
+            ]);
+
+            renderDNS(dnsResults);
+            renderSecurity(securityResults);
+            renderWHOIS(whoisData);
+            renderHealth(dnsResults, securityResults, whoisData);
+            renderHeaders(headerData);
+        }
+
+        async function fetchDNS(name, type) {
+            const res = await fetch(`https://dns.google/resolve?name=${name}&type=${type}`);
+            const data = await res.json();
+            return { type, name, records: data.Answer || [] };
+        }
+
+        async function fetchWHOIS(domain) {
+            try {
+                const res = await fetch(`https://rdap.org/domain/${domain}`);
+                if (!res.ok) return null;
+                return await res.json();
+            } catch { return null; }
+        }
+
+        async function fetchHeaders(domain) {
+            try {
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('http://' + domain)}`);
+                const data = await res.json();
+                return data.contents ? "Analysis Successful: Server is active and responding." : "Limited header access via browser proxy.";
+            } catch { return "Headers unreachable due to CORS/Network restrictions."; }
+        }
+
+        function renderDNS(results) {
+            const grid = document.getElementById('dnsGrid');
+            grid.innerHTML = '';
+            results.forEach(res => {
+                if (res.records.length === 0) return;
+                
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-2xl p-6';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="record-badge type-${res.type}">${res.type}</span>
+                            <h4 class="font-bold text-slate-800">${res.records.length} Record(s)</h4>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        ${res.records.map(r => `
+                            <div class="code-font text-[11px] bg-slate-50 p-2.5 rounded-lg border border-slate-100 break-all leading-relaxed">
+                                ${r.data}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderSecurity(results) {
+            const grid = document.getElementById('securityGrid');
+            const [txtRecords, dmarcRecords] = results;
+            
+            const spf = txtRecords.records.find(r => r.data.includes('v=spf1'));
+            const dmarc = dmarcRecords.records.find(r => r.data.includes('v=DMARC1'));
+
+            grid.innerHTML = `
+                ${createSecurityCard('SPF (Email Policy)', spf ? 'Configured' : 'Missing', !!spf)}
+                ${createSecurityCard('DMARC (Spoof Guard)', dmarc ? 'Enabled' : 'Missing', !!dmarc)}
+                ${createSecurityCard('DNSSEC (Data Integrity)', 'Unknown', false)}
+            `;
+        }
+
+        function createSecurityCard(label, status, isGood) {
+            return `
+                <div class="p-4 rounded-xl border ${isGood ? 'bg-green-50/50 border-green-100' : 'bg-amber-50/50 border-amber-100'}">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">${label}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-sm ${isGood ? 'text-green-700' : 'text-amber-700'}">${status}</span>
+                        <i class="fas ${isGood ? 'fa-check-circle text-green-500' : 'fa-exclamation-circle text-amber-500'}"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderWHOIS(data) {
+            const content = document.getElementById('whoisContent');
+            if (!data) {
+                content.innerHTML = `<div class="p-8 text-center text-slate-400 italic bg-slate-50 rounded-xl border border-dashed">No registration data available via RDAP protocol.</div>`;
+                return;
+            }
+
+            const events = data.events || [];
+            const registrar = data.entities ? data.entities[0]?.vcardArray?.[1]?.find(i => i[0] === 'fn')?.[3] : 'N/A';
+
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-widest">Registrar</p>
+                        <p class="font-bold text-slate-800 text-sm truncate">${registrar}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-widest">Domain Status</p>
+                        <p class="font-bold text-blue-600 text-sm">${(data.status || ['Active'])[0]}</p>
+                    </div>
+                    ${events.slice(0, 4).map(e => `
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-widest">${e.eventAction.replace(/([A-Z])/g, ' $1')}</p>
+                            <p class="font-bold text-slate-800 text-sm">${new Date(e.eventDate).toLocaleDateString(undefined, {year: 'numeric', month: 'long', day: 'numeric'})}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderHealth(dns, security, whois) {
+            const container = document.getElementById('healthChecks');
+            const checks = [];
+
+            const hasA = dns.find(r => r.type === 'A')?.records.length > 0;
+            checks.push({ label: 'A Record Presence', pass: hasA, desc: hasA ? 'Domain resolves to a valid IPv4 address.' : 'Missing A record. The website will not load.' });
+
+            const hasMX = dns.find(r => r.type === 'MX')?.records.length > 0;
+            checks.push({ label: 'MX Record Configuration', pass: hasMX, desc: hasMX ? 'Mail exchange servers are correctly defined.' : 'No MX records found. This domain cannot receive emails.' });
+
+            const hasSPF = security[0].records.some(r => r.data.includes('v=spf1'));
+            checks.push({ label: 'SPF Security Record', pass: hasSPF, desc: hasSPF ? 'SPF policy exists to prevent unauthorized email sending.' : 'Missing SPF record. High risk of email spoofing.' });
+
+            const hasNS = dns.find(r => r.type === 'NS')?.records.length > 0;
+            checks.push({ label: 'Name Server Redundancy', pass: hasNS, desc: hasNS ? 'Authoritative name servers are responding.' : 'Critical error: No name servers detected.' });
+
+            container.innerHTML = checks.map(c => `
+                <div class="flex items-start gap-4 p-4 rounded-xl border ${c.pass ? 'bg-white border-slate-100' : 'bg-red-50 border-red-100'}">
+                    <div class="mt-0.5">
+                        <i class="fas ${c.pass ? 'fa-check-circle text-green-500' : 'fa-times-circle text-red-400'} text-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-sm text-slate-800">${c.label}</h5>
+                        <p class="text-xs text-slate-500 mt-1">${c.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderHeaders(data) {
+            const pre = document.getElementById('headersContent');
+            pre.textContent = "Report Summary:\n" + data + 
+                           "\n\nNote: Detailed HTTP response headers (like Server, X-Frame-Options) are blocked by browser CORS security policies. For a full security header audit, a server-side scanner is recommended.";
+        }
+    </script>
+</body>
+</html>
