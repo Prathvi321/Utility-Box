@@ -75,28 +75,28 @@ const CsvJsonConverter = () => {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col max-w-7xl mx-auto w-full animate-in fade-in duration-500">
-      <div className="mb-4">
-        <div className="bg-green-50 text-green-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 border border-green-100"><Table2 size={28} /></div>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-2">CSV to JSON Converter</h1>
-        <p className="text-base text-gray-600 font-medium">Convert CSV rows into JSON objects and JSON arrays back into CSV.</p>
+    <div className="max-w-7xl mx-auto animate-in fade-in duration-500">
+      <div className="mb-8">
+        <div className="bg-green-50 text-green-600 w-20 h-20 rounded-3xl flex items-center justify-center mb-6 border border-green-100"><Table2 size={38} /></div>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">CSV to JSON Converter</h1>
+        <p className="text-lg text-gray-600 font-medium">Convert CSV rows into JSON objects and JSON arrays back into CSV.</p>
       </div>
 
-      <div className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-4 mb-4 flex flex-wrap gap-3 items-center">
+      <div className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-6 mb-6 flex flex-wrap gap-3 items-center">
         <button onClick={() => setMode('csv-to-json')} className={`px-5 py-3 rounded-2xl font-bold transition ${mode === 'csv-to-json' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>CSV → JSON</button>
         <button onClick={() => setMode('json-to-csv')} className={`px-5 py-3 rounded-2xl font-bold transition ${mode === 'json-to-csv' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>JSON → CSV</button>
         <button onClick={swap} className="ml-auto inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-green-50 text-green-700 font-bold hover:bg-green-100"><ArrowLeftRight size={18} /> Use Output as Input</button>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4 flex-1 min-h-0">
-        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-4 flex flex-col min-h-0">
+      <div className="grid lg:grid-cols-2 gap-6">
+        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-6">
           <h2 className="text-xl font-black text-gray-900 mb-4">Input</h2>
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} className="w-full flex-1 min-h-0 p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm focus:ring-4 focus:ring-green-100 focus:border-green-400 outline-none resize-y" />
+          <textarea value={input} onChange={(e) => setInput(e.target.value)} className="w-full min-h-[430px] p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm focus:ring-4 focus:ring-green-100 focus:border-green-400 outline-none resize-y" />
         </section>
-        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-4 flex flex-col min-h-0">
+        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-4"><h2 className="text-xl font-black text-gray-900">Output</h2><div className="flex gap-2"><button onClick={copyOutput} disabled={!output} className="p-3 rounded-xl bg-gray-100 hover:bg-green-50 disabled:opacity-40">{copied ? <Check className="text-green-600" /> : <Copy />}</button><button onClick={downloadOutput} disabled={!output} className="p-3 rounded-xl bg-gray-100 hover:bg-green-50 disabled:opacity-40"><Download /></button></div></div>
           {error && <p className="mb-3 text-red-600 font-semibold">{error}</p>}
-          <textarea readOnly value={output} className="w-full flex-1 min-h-0 p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm outline-none resize-y" placeholder="Converted result appears here..." />
+          <textarea readOnly value={output} className="w-full min-h-[430px] p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm outline-none resize-y" placeholder="Converted result appears here..." />
         </section>
       </div>
     </div>

@@ -71,16 +71,16 @@ const Base64Converter = () => {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col max-w-7xl mx-auto w-full animate-in fade-in duration-500">
-      <div className="mb-4">
-        <div className="bg-blue-50 text-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 border border-blue-100">
-          <Binary size={28} />
+    <div className="max-w-7xl mx-auto animate-in fade-in duration-500">
+      <div className="mb-8">
+        <div className="bg-blue-50 text-blue-600 w-20 h-20 rounded-3xl flex items-center justify-center mb-6 border border-blue-100">
+          <Binary size={38} />
         </div>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Base64 Encoder/Decoder</h1>
-        <p className="text-base text-gray-600 font-medium">Encode and decode text or file contents locally in your browser.</p>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Base64 Encoder/Decoder</h1>
+        <p className="text-lg text-gray-600 font-medium">Encode and decode text or file contents locally in your browser.</p>
       </div>
 
-      <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-sm p-4 mb-4 flex flex-wrap gap-3 items-center">
+      <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-sm p-6 mb-6 flex flex-wrap gap-3 items-center">
         {['encode', 'decode'].map(option => (
           <button key={option} onClick={() => setMode(option)} className={`px-5 py-3 rounded-2xl font-bold capitalize transition ${mode === option ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{option}</button>
         ))}
@@ -91,12 +91,12 @@ const Base64Converter = () => {
         {fileName && <span className="text-sm text-gray-500 font-semibold">Loaded: {fileName}</span>}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4 flex-1 min-h-0">
-        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-4 flex flex-col min-h-0">
+      <div className="grid lg:grid-cols-2 gap-6">
+        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-6">
           <h2 className="text-xl font-black text-gray-900 mb-4">Input</h2>
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} className="w-full flex-1 min-h-0 p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none resize-y" placeholder={mode === 'encode' ? 'Text to encode...' : 'Base64 to decode...'} />
+          <textarea value={input} onChange={(e) => setInput(e.target.value)} className="w-full min-h-[420px] p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none resize-y" placeholder={mode === 'encode' ? 'Text to encode...' : 'Base64 to decode...'} />
         </section>
-        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-4 flex flex-col min-h-0">
+        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-black text-gray-900">Output</h2>
             <div className="flex gap-2">
@@ -106,7 +106,7 @@ const Base64Converter = () => {
             </div>
           </div>
           {(error || conversionError) && <p className="mb-3 text-red-600 font-semibold">{error || conversionError}</p>}
-          <textarea readOnly value={output} className="w-full flex-1 min-h-0 p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm outline-none resize-y" placeholder="Result appears here..." />
+          <textarea readOnly value={output} className="w-full min-h-[420px] p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm outline-none resize-y" placeholder="Result appears here..." />
         </section>
       </div>
     </div>
