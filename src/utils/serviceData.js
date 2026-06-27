@@ -13,7 +13,11 @@ import {
     Receipt,
     Video,
     Database,
-    Globe
+    Globe,
+    Binary,
+    Link2,
+    Fingerprint,
+    Table2
 } from 'lucide-react';
 
 export const services = [
@@ -128,6 +132,38 @@ export const services = [
         icon: Database,
         color: 'blue',
         keywords: ['database', 'sql', 'json', 'convert', 'data', 'bridge']
+    },
+    {
+        id: 'base64-converter',
+        title: 'Base64 Encoder/Decoder',
+        description: 'Encode and decode text or file contents locally in your browser.',
+        icon: Binary,
+        color: 'blue',
+        keywords: ['base64', 'encode', 'decode', 'text', 'file', 'binary', 'converter']
+    },
+    {
+        id: 'url-encoder',
+        title: 'URL Encoder/Decoder',
+        description: 'Encode and decode URLs, query strings, and URL components.',
+        icon: Link2,
+        color: 'purple',
+        keywords: ['url', 'encode', 'decode', 'uri', 'query', 'percent', 'component']
+    },
+    {
+        id: 'hash-generator',
+        title: 'Hash Generator',
+        description: 'Generate secure SHA hashes from text in your browser.',
+        icon: Fingerprint,
+        color: 'amber',
+        keywords: ['hash', 'sha', 'sha-256', 'sha-1', 'checksum', 'crypto', 'digest']
+    },
+    {
+        id: 'csv-json-converter',
+        title: 'CSV to JSON Converter',
+        description: 'Convert CSV data into JSON and JSON arrays back into CSV.',
+        icon: Table2,
+        color: 'green',
+        keywords: ['csv', 'json', 'convert', 'spreadsheet', 'table', 'data', 'export']
     },
     {
         id: 'dns-tracker',

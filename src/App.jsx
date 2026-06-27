@@ -18,6 +18,10 @@ import InvoiceGenerator from './pages/InvoiceGenerator';
 import FrameSnap from './pages/FrameSnap';
 import DatabaseConverter from './pages/DatabaseConverter';
 import DnsTracker from './pages/DnsTracker';
+import Base64Converter from './pages/Base64Converter';
+import UrlEncoder from './pages/UrlEncoder';
+import HashGenerator from './pages/HashGenerator';
+import CsvJsonConverter from './pages/CsvJsonConverter';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -54,6 +58,10 @@ function App() {
             <Route path="/framesnap" element={<FrameSnap />} />
             <Route path="/database-converter" element={<DatabaseConverter />} />
             <Route path="/dns-tracker" element={<DnsTracker />} />
+            <Route path="/base64-converter" element={<Base64Converter />} />
+            <Route path="/url-encoder" element={<UrlEncoder />} />
+            <Route path="/hash-generator" element={<HashGenerator />} />
+            <Route path="/csv-json-converter" element={<CsvJsonConverter />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&
@@ -70,7 +78,11 @@ function App() {
               s.id !== 'invoice-generator' &&
               s.id !== 'framesnap' &&
               s.id !== 'database-converter' &&
-              s.id !== 'dns-tracker'
+              s.id !== 'dns-tracker' &&
+              s.id !== 'base64-converter' &&
+              s.id !== 'url-encoder' &&
+              s.id !== 'hash-generator' &&
+              s.id !== 'csv-json-converter'
             ).map(service => (
               <Route
                 key={service.id}
