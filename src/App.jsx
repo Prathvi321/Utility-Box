@@ -22,6 +22,7 @@ import Base64Converter from './pages/Base64Converter';
 import UrlEncoder from './pages/UrlEncoder';
 import HashGenerator from './pages/HashGenerator';
 import CsvJsonConverter from './pages/CsvJsonConverter';
+import AiPurger from './pages/AiPurger';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -62,6 +63,7 @@ function App() {
             <Route path="/url-encoder" element={<UrlEncoder />} />
             <Route path="/hash-generator" element={<HashGenerator />} />
             <Route path="/csv-json-converter" element={<CsvJsonConverter />} />
+            <Route path="/ai-purger" element={<AiPurger />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&
@@ -82,7 +84,8 @@ function App() {
               s.id !== 'base64-converter' &&
               s.id !== 'url-encoder' &&
               s.id !== 'hash-generator' &&
-              s.id !== 'csv-json-converter'
+              s.id !== 'csv-json-converter' &&
+              s.id !== 'ai-purger'
             ).map(service => (
               <Route
                 key={service.id}

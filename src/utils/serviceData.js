@@ -17,7 +17,8 @@ import {
     Binary,
     Link2,
     Fingerprint,
-    Table2
+    Table2,
+    ShieldCheck
 } from 'lucide-react';
 
 export const services = [
@@ -172,5 +173,13 @@ export const services = [
         icon: Globe,
         color: 'blue',
         keywords: ['dns', 'domain', 'tracker', 'records', 'whois', 'lookup', 'security']
+    },
+    {
+        id: 'ai-purger',
+        title: 'AI Media Purger',
+        description: 'Strip AI footprints, prompt trails, device parameters, and EXIF coordinates from images and videos.',
+        icon: ShieldCheck,
+        color: 'forest',
+        keywords: ['metadata', 'exif', 'strip', 'clean', 'ai', 'privacy', 'coordinates', 'gps', 'remove', 'purger']
     }
 ];
