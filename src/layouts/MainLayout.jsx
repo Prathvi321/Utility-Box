@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Search, Sparkles, Loader2 } from 'lucide-react';
+import { Search, Sparkles, Loader2, WifiOff } from 'lucide-react';
 
 const MainLayout = () => {
-    const [searchTerm, setSearchTerm] = useState('');
+     const [searchTerm, setSearchTerm] = useState('');
     const [searchMode, setSearchMode] = useState('keyword'); // 'keyword' or 'ai'
     const [aiMatches, setAiMatches] = useState([]);
     const [isAiSearching, setIsAiSearching] = useState(false);
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
     
     const navRef = useRef(null);
     const location = useLocation();
@@ -15,7 +16,7 @@ const MainLayout = () => {
         window.scrollTo(0, 0);
     }, [location.pathname]);
 
-    useEffect(() => {
+     useEffect(() => {
         const anime = window.anime;
         if (!anime || !navRef.current) return;
 
@@ -29,10 +30,29 @@ const MainLayout = () => {
         });
     }, []);
 
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
+
     // Perform AI Smart Search on demand
-    const triggerAiSearch = async (queryToSearch) => {
+     const triggerAiSearch = async (queryToSearch) => {
         const query = queryToSearch || searchTerm;
         if (!query.trim()) return;
+
+        if (!isOnline) {
+            setSearchMode('keyword');
+            setAiMatches([]);
+            return;
+        }
 
         setSearchMode('ai');
         setIsAiSearching(true);
@@ -75,8 +95,14 @@ const MainLayout = () => {
         }
     };
 
-    return (
+     return (
         <div className="min-h-screen bg-gradient-to-br from-stone-50 via-sage-50 to-stone-100 flex flex-col font-sans">
+            {!isOnline && (
+                <div className="bg-gradient-to-r from-red-500 to-red-600 text-white text-center py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 z-[60] shadow-md animate-slide-down">
+                    <WifiOff className="w-4 h-4 text-red-100" />
+                    <span>You are currently working offline. API-dependent services are disabled, but all local utilities remain fully operational.</span>
+                </div>
+            )}
             <nav ref={navRef} className="sticky top-0 z-50 border-b border-stone-200/50 bg-stone-50/80 backdrop-blur-2xl shadow-sm transition-all duration-300">
                 <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center min-h-16 md:min-h-20 gap-3 sm:gap-5">
@@ -109,16 +135,19 @@ const MainLayout = () => {
                                     }}
                                     className="w-full pl-11 pr-32 py-3 text-base border border-stone-200 rounded-2xl focus:outline-none focus:border-sage-500 focus:ring-4 focus:ring-sage-200 transition-all duration-200 bg-white/90 hover:bg-white focus:bg-white shadow-sm hover:shadow-md focus:shadow-lg"
                                 />
-                                <div className="absolute inset-y-2 right-2 flex items-center">
+                                 <div className="absolute inset-y-2 right-2 flex items-center">
                                     <button
                                         type="button"
                                         onClick={toggleSearchMode}
-                                        disabled={!searchTerm.trim()}
+                                        disabled={!searchTerm.trim() || !isOnline}
                                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1 border ${
-                                            searchMode === 'ai'
+                                            !isOnline
+                                                ? 'bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
+                                                : searchMode === 'ai'
                                                 ? 'bg-sage-900 border-sage-950 text-white shadow-sm'
                                                 : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed'
                                         }`}
+                                        title={!isOnline ? "AI search is unavailable offline" : ""}
                                     >
                                         <Sparkles className={`w-3.5 h-3.5 ${searchMode === 'ai' ? 'animate-pulse text-sage-300' : ''}`} />
                                         <span>AI Search</span>
@@ -153,15 +182,18 @@ const MainLayout = () => {
                             className="w-full pl-9 pr-24 py-2.5 text-sm border border-stone-200 rounded-2xl focus:outline-none focus:border-sage-500 focus:ring-4 focus:ring-sage-200 bg-white/90 focus:bg-white shadow-sm hover:shadow-md"
                         />
                         <div className="absolute inset-y-1.5 right-1.5 flex items-center">
-                            <button
+                             <button
                                 type="button"
                                 onClick={toggleSearchMode}
-                                disabled={!searchTerm.trim()}
+                                disabled={!searchTerm.trim() || !isOnline}
                                 className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all duration-300 flex items-center gap-0.5 border ${
-                                    searchMode === 'ai'
+                                    !isOnline
+                                        ? 'bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
+                                        : searchMode === 'ai'
                                         ? 'bg-sage-900 border-sage-950 text-white'
                                         : 'bg-stone-50 border-stone-200 text-stone-600 disabled:opacity-40'
                                 }`}
+                                title={!isOnline ? "AI search is unavailable offline" : ""}
                             >
                                 <Sparkles className="w-3 h-3" />
                                 <span>AI</span>
@@ -171,7 +203,7 @@ const MainLayout = () => {
                 </div>
             </nav>
 
-            <main className="flex-1 w-full relative">
+             <main className="flex-1 w-full relative">
                 <Outlet context={{ 
                     searchTerm, 
                     setSearchTerm, 
@@ -179,7 +211,8 @@ const MainLayout = () => {
                     setSearchMode, 
                     aiMatches, 
                     isAiSearching,
-                    triggerAiSearch
+                    triggerAiSearch,
+                    isOnline
                 }} />
             </main>
 

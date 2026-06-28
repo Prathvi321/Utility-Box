@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { services } from '../utils/serviceData';
-import { Sparkles, Search, MousePointerClick, Loader2 } from 'lucide-react';
+import { Sparkles, Search, MousePointerClick, Loader2, WifiOff } from 'lucide-react';
 
 const colorClasses = {
     sage: { bg: 'bg-sage-100 border-sage-300 text-sage-600', btn: 'bg-sage-500 hover:bg-sage-600', shadow: 'hover:shadow-sage-200/50 hover:border-sage-300', ring: 'from-sage-500/20' },
@@ -40,14 +40,16 @@ const Home = () => {
         searchMode, 
         aiMatches, 
         isAiSearching,
-        triggerAiSearch
+        triggerAiSearch,
+        isOnline
     } = useOutletContext() || { 
         searchTerm: '', 
         setSearchTerm: () => {}, 
         searchMode: 'keyword', 
         aiMatches: [], 
         isAiSearching: false,
-        triggerAiSearch: () => {}
+        triggerAiSearch: () => {},
+        isOnline: true
     };
     
     const [activeFilter, setActiveFilter] = useState('');
@@ -116,17 +118,23 @@ const Home = () => {
                             <div ref={gridRef} className="grid grid-cols-1 min-[520px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                                 {filteredServices.map((service) => {
                                     const colors = getColorClasses(service.color);
+                                    const isServiceOffline = !isOnline && service.requiresInternet;
                                     return (
-                                        <article key={service.id} className={`service-card opacity-0 group relative overflow-hidden bg-stone-50/80 backdrop-blur-xl rounded-[1.7rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl transition-all duration-300 border border-stone-200 flex flex-col ${colors.shadow}`}>
+                                        <article key={service.id} className={`service-card opacity-0 group relative overflow-hidden bg-stone-50/80 backdrop-blur-xl rounded-[1.7rem] sm:rounded-[2rem] p-5 sm:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl transition-all duration-300 border flex flex-col ${isServiceOffline ? 'border-red-200/50 opacity-80' : 'border-stone-200'} ${colors.shadow}`}>
                                             <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full bg-gradient-to-br ${colors.ring} to-transparent blur-xl group-hover:scale-125 transition-transform`} />
-                                            <div className={`relative w-14 h-14 rounded-2xl flex items-center justify-center mb-5 ${colors.bg} border transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm`}>
-                                                <service.icon className="w-7 h-7" strokeWidth={1.5} />
+                                            {isServiceOffline && (
+                                                <span className="absolute top-4 right-4 text-[10px] bg-red-500/10 border border-red-500/20 text-red-600 font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1 backdrop-blur-sm z-10">
+                                                    <WifiOff className="w-3 h-3" /> Offline
+                                                </span>
+                                            )}
+                                            <div className={`relative w-14 h-14 rounded-2xl flex items-center justify-center mb-5 ${isServiceOffline ? 'bg-red-50 text-red-400 border-red-100' : colors.bg} border transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm`}>
+                                                {isServiceOffline ? <WifiOff className="w-7 h-7" strokeWidth={1.5} /> : <service.icon className="w-7 h-7" strokeWidth={1.5} />}
                                             </div>
                                             <h3 className="relative text-lg sm:text-xl font-black text-stone-900 mb-3 tracking-tight group-hover:text-sage-700 transition-colors">{service.title}</h3>
                                             <p className="relative text-sm sm:text-[15px] text-stone-600 mb-6 flex-grow leading-relaxed font-medium">{service.description}</p>
-                                            <Link to={`/${service.id}`} className={`relative w-full flex items-center justify-center gap-2 px-5 py-3.5 ${colors.btn} text-white font-black rounded-2xl transition-all duration-300 text-sm shadow-lg group-hover:shadow-xl focus:ring-2 focus:ring-offset-2`}>
-                                                Use Tool
-                                                <MousePointerClick className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                                            <Link to={`/${service.id}`} className={`relative w-full flex items-center justify-center gap-2 px-5 py-3.5 ${isServiceOffline ? 'bg-stone-200 border border-stone-300 text-stone-500 hover:bg-stone-200 hover:shadow-none cursor-pointer' : colors.btn + ' text-white'} font-black rounded-2xl transition-all duration-300 text-sm shadow-lg group-hover:shadow-xl focus:ring-2 focus:ring-offset-2`}>
+                                                {isServiceOffline ? 'Requires Internet' : 'Use Tool'}
+                                                {isServiceOffline ? <WifiOff className="w-4 h-4" /> : <MousePointerClick className="w-4 h-4 group-hover:rotate-12 transition-transform" />}
                                             </Link>
                                         </article>
                                     );

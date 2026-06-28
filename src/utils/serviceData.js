@@ -60,6 +60,7 @@ export const services = [
         description: 'Convert text into audio files',
         icon: Mic,
         color: 'red',
+        requiresInternet: true,
         keywords: ['text', 'speech', 'audio', 'voice', 'sound', 'read', 'tts', 'convert']
     },
     {
@@ -108,6 +109,7 @@ export const services = [
         description: 'Remove image backgrounds automatically with AI',
         icon: Eraser,
         color: 'orange',
+        requiresInternet: true,
         keywords: ['background', 'remove', 'ai', 'transparent', 'eraser', 'clear', 'cutout']
     },
     {
@@ -172,6 +174,7 @@ export const services = [
         description: 'Track and verify DNS records globally.',
         icon: Globe,
         color: 'blue',
+        requiresInternet: true,
         keywords: ['dns', 'domain', 'tracker', 'records', 'whois', 'lookup', 'security']
     },
     {
