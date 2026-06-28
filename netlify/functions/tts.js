@@ -1,6 +1,6 @@
-const https = require('https');
+import https from 'https';
 
-exports.handler = async function (event, context) {
+export async function handler(event, context) {
     // CORS Handling (Optional: Netlify handles this if on same domain, but good for safety)
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -104,4 +104,4 @@ exports.handler = async function (event, context) {
         console.error("Function Error:", error);
         return { statusCode: 500, headers, body: JSON.stringify({ error: `Internal Server Error: ${error.message}` }) };
     }
-};
+}

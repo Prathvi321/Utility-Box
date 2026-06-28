@@ -67,12 +67,11 @@ const TextToSpeech = () => {
     const [voice, setVoice] = useState('Zephyr');
     const [isGenerating, setIsGenerating] = useState(false);
     const [audioUrl, setAudioUrl] = useState(null);
-    const [message, setMessage] = useState(null); // { type: 'success' | 'error', text: string }
+    const [message, setMessage] = useState(null);
 
     const audioRef = useRef(null);
 
     useEffect(() => {
-        // Reset voice when language changes (default to first voice)
         if (languages[language]) {
             setVoice(languages[language].voices[0].name);
         }
@@ -203,90 +202,105 @@ const TextToSpeech = () => {
     };
 
     return (
-        <div className="w-full">
-            <div className="text-center mb-8">
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
-                    <Mic className="text-red-600" size={32} />
-                    AI Text-to-Speech
-                </h1>
-                <p className="text-gray-600">Enter your text and select a voice to generate high-quality audio</p>
+        <div className="h-full flex flex-col animate-in fade-in duration-500">
+            {/* Compact header row */}
+            <div className="compact-service-header">
+                <div className="header-icon bg-sage-100 text-sage-600 border border-sage-200">
+                    <Mic size={20} />
+                </div>
+                <div className="min-w-0">
+                    <h1>AI Text-to-Speech</h1>
+                    <p>Enter text and select a voice to generate high-quality audio.</p>
+                </div>
             </div>
 
-            <div className="space-y-6">
-                {/* Text Input */}
-                <div>
-                    <label htmlFor="textInput" className="block text-sm font-medium text-gray-700 mb-2">Text to Convert</label>
+            {/* Horizontal layout: text+options left, output right */}
+            <div className="grid lg:grid-cols-[1fr_300px] gap-3 flex-1 min-h-0 overflow-hidden">
+                {/* Left: Text Input + Voice Options */}
+                <div className="bg-white/70 rounded-xl border border-stone-100 shadow-sm p-3 flex flex-col min-h-0 overflow-hidden">
+                    <label htmlFor="textInput" className="block text-xs font-bold text-stone-700 mb-1">Text to Convert</label>
                     <textarea
                         id="textInput"
                         value={text}
                         onChange={(e) => setText(e.target.value)}
-                        className="w-full h-32 px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200 resize-none"
+                        className="w-full flex-1 px-3 py-2 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-sage-500 focus:ring-2 focus:ring-sage-200 transition resize-none bg-stone-50 min-h-0"
                         placeholder="Enter the text you want to convert to speech..."
                     />
+
+                    {/* Voice Options inline row */}
+                    <div className="grid grid-cols-2 gap-2 mt-2 flex-shrink-0">
+                        <div>
+                            <label htmlFor="languageSelect" className="block text-[11px] font-bold text-stone-600 mb-0.5">Language</label>
+                            <select
+                                id="languageSelect"
+                                value={language}
+                                onChange={(e) => setLanguage(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-stone-200 rounded-lg text-xs focus:outline-none focus:border-sage-500 focus:ring-2 focus:ring-sage-200 transition bg-white"
+                            >
+                                {Object.entries(languages).map(([code, lang]) => (
+                                    <option key={code} value={code}>{lang.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="voiceSelect" className="block text-[11px] font-bold text-stone-600 mb-0.5">Voice</label>
+                            <select
+                                id="voiceSelect"
+                                value={voice}
+                                onChange={(e) => setVoice(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-stone-200 rounded-lg text-xs focus:outline-none focus:border-sage-500 focus:ring-2 focus:ring-sage-200 transition bg-white"
+                            >
+                                {languages[language]?.voices.map(v => (
+                                    <option key={v.name} value={v.name}>{v.name} ({v.description})</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Voice Options */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label htmlFor="languageSelect" className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-                        <select
-                            id="languageSelect"
-                            value={language}
-                            onChange={(e) => setLanguage(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200 bg-white"
-                        >
-                            {Object.entries(languages).map(([code, lang]) => (
-                                <option key={code} value={code}>{lang.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="voiceSelect" className="block text-sm font-medium text-gray-700 mb-2">Voice</label>
-                        <select
-                            id="voiceSelect"
-                            value={voice}
-                            onChange={(e) => setVoice(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200 bg-white"
-                        >
-                            {languages[language]?.voices.map(v => (
-                                <option key={v.name} value={v.name}>{v.name} ({v.description})</option>
-                            ))}
-                        </select>
-                    </div>
+                {/* Right: Generate + Output */}
+                <div className="bg-white/70 rounded-xl border border-stone-100 shadow-sm p-3 flex flex-col justify-center">
+                    <button
+                        onClick={handleGenerate}
+                        disabled={isGenerating}
+                        className="w-full py-2.5 px-4 bg-sage-500 text-white font-bold rounded-xl hover:bg-sage-600 transition text-sm focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-sage-200"
+                    >
+                        {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <PlayCircle size={16} />}
+                        {isGenerating ? 'Generating...' : 'Generate Speech'}
+                    </button>
+
+                    {/* Message Box */}
+                    {message && (
+                        <div className={`mt-2 p-2.5 rounded-xl flex items-center gap-2 text-xs font-semibold ${message.type === 'error' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-sage-50 text-sage-700 border border-sage-100'}`}>
+                            {message.type === 'error' && <AlertCircle size={13} />}
+                            {message.text}
+                        </div>
+                    )}
+
+                    {/* Audio Player and Download */}
+                    {audioUrl && (
+                        <div className="mt-3 bg-stone-50 p-3 rounded-xl border border-stone-100">
+                            <h3 className="text-xs font-bold text-stone-800 mb-1.5">Generated Audio</h3>
+                            <audio ref={audioRef} controls src={audioUrl} className="w-full mb-2" style={{ height: '32px' }}></audio>
+                            <button
+                                onClick={handleDownload}
+                                className="w-full py-2 px-3 bg-sage-900 text-white font-bold rounded-xl hover:bg-sage-700 transition text-xs flex items-center justify-center gap-1.5"
+                            >
+                                <Download size={13} />
+                                Download Audio
+                            </button>
+                        </div>
+                    )}
+
+                    {!audioUrl && !message && (
+                        <div className="mt-4 text-center">
+                            <div className="bg-sage-50 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2">
+                                <Mic size={20} className="text-sage-300" />
+                            </div>
+                            <p className="text-xs text-stone-400 font-medium">Enter text and click Generate to create audio.</p>
+                        </div>
+                    )}
                 </div>
-
-                {/* Generate Button */}
-                <button
-                    onClick={handleGenerate}
-                    disabled={isGenerating}
-                    className={`w-full py-3 px-6 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
-                >
-                    {isGenerating ? <Loader2 className="animate-spin" /> : <PlayCircle />}
-                    {isGenerating ? 'Generating...' : 'Generate Speech'}
-                </button>
-
-                {/* Message Box */}
-                {message && (
-                    <div className={`p-4 rounded-xl flex items-center gap-2 ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                        {message.type === 'error' && <AlertCircle size={20} />}
-                        {message.text}
-                    </div>
-                )}
-
-                {/* Audio Player and Download */}
-                {audioUrl && (
-                    <div className={`bg-gray-50 p-6 rounded-xl border border-gray-100 animate-fadeIn`}>
-                        <h3 className="text-lg font-semibold text-gray-800 mb-3">Generated Audio</h3>
-                        <audio ref={audioRef} controls src={audioUrl} className="w-full mb-4"></audio>
-                        <button
-                            onClick={handleDownload}
-                            className="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2"
-                        >
-                            <Download size={20} />
-                            Download Audio
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );

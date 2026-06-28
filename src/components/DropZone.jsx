@@ -10,7 +10,8 @@ const DropZone = ({
     title = "Click to upload",
     subtitle = "or drag and drop",
     description,
-    colorClass = "indigo"
+    colorClass = "indigo",
+    compact = false
 }) => {
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef(null);
@@ -96,32 +97,32 @@ const DropZone = ({
                     borderColor: isDragging ? 'var(--tw-colors-indigo-400)' : 'var(--tw-colors-gray-200)',
                     backgroundColor: isDragging ? 'rgba(238, 242, 255, 0.5)' : '#ffffff',
                 }}
-                className={`flex flex-col items-center justify-center w-full min-h-[16rem] border-2 border-dashed rounded-[2rem] cursor-pointer transition-shadow duration-300 ease-in-out bg-white/50 backdrop-blur-sm ${isDragging
+                className={`flex flex-col items-center justify-center w-full ${compact ? 'min-h-[7rem] rounded-2xl' : 'min-h-[16rem] rounded-[2rem]'} cursor-pointer transition-shadow duration-300 ease-in-out bg-white/50 backdrop-blur-sm ${isDragging
                         ? `${currentColors.border} ${currentColors.bg} ring-4 ${currentColors.ring} shadow-lg shadow-${colorClass}-100/50`
                         : `border-gray-200 hover:${currentColors.border} hover:shadow-md`
                     }`}
             >
-                <div className="flex flex-col items-center justify-center p-8 pointer-events-none">
+                <div className={`flex flex-col items-center justify-center ${compact ? 'p-3' : 'p-8'} pointer-events-none`}>
                     <motion.div
                         animate={{
                             y: isDragging ? -10 : 0,
                             scale: isDragging ? 1.1 : 1
                         }}
                         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className={`w-20 h-20 mb-6 rounded-3xl flex items-center justify-center ${isDragging ? `bg-${colorClass}-100 ${currentColors.text}` : 'bg-gray-50 text-gray-400'
+                        className={`flex items-center justify-center ${compact ? 'w-10 h-10 mb-2 rounded-xl' : 'w-20 h-20 mb-6 rounded-3xl'} ${isDragging ? `bg-${colorClass}-100 ${currentColors.text}` : 'bg-gray-50 text-gray-400'
                             } shadow-inner bg-white/50 backdrop-blur-md border border-white`}
                     >
-                        <Icon strokeWidth={1.5} className="w-10 h-10" />
+                        <Icon strokeWidth={1.5} className={compact ? "w-5 h-5" : "w-10 h-10"} />
                     </motion.div>
 
-                    <h3 className="mb-2 text-xl font-semibold text-gray-800 tracking-tight">
+                    <h3 className={`mb-1 font-semibold text-gray-800 tracking-tight ${compact ? 'text-xs' : 'text-xl'}`}>
                         {title}
                     </h3>
-                    <p className="mb-4 text-sm font-medium text-gray-500">
+                    <p className={`mb-1 font-medium text-gray-500 ${compact ? 'text-[10px]' : 'text-sm'}`}>
                         {subtitle}
                     </p>
 
-                    {description && (
+                    {description && !compact && (
                         <p className="text-xs text-gray-400 font-medium max-w-xs">{description}</p>
                     )}
                 </div>

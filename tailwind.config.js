@@ -7,6 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
+        'neutral-light': '#E6E6E6',
+        'sage-mist': '#BAC8B1',
         sage: {
           50: '#f5f7f3',
           100: '#eef2e7',

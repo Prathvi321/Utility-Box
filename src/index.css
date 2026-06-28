@@ -25,9 +25,25 @@
 .invoice-item-input:focus {
   background-color: #f8fafc;
   outline: none;
-  border-bottom: 2px solid #3b82f6;
+  border-bottom: 2px solid #7B9669;
 }
 
+/* ── Compact service page utilities ── */
+@layer components {
+  /* Compact header row: icon + title + desc inline */
+  .compact-service-header {
+    @apply flex items-center gap-3 mb-2;
+  }
+  .compact-service-header .header-icon {
+    @apply w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0;
+  }
+  .compact-service-header h1 {
+    @apply text-xl md:text-2xl font-extrabold text-sage-900 tracking-tight leading-tight;
+  }
+  .compact-service-header p {
+    @apply text-xs text-stone-500 font-medium leading-tight;
+  }
+}
 
 @layer utilities {
   .services-scrollbar {

@@ -71,42 +71,47 @@ const Base64Converter = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto animate-in fade-in duration-500">
-      <div className="mb-8">
-        <div className="bg-blue-50 text-blue-600 w-20 h-20 rounded-3xl flex items-center justify-center mb-6 border border-blue-100">
-          <Binary size={38} />
+    <div className="h-full flex flex-col animate-in fade-in duration-500">
+      {/* Compact header row */}
+      <div className="compact-service-header">
+        <div className="header-icon bg-sage-100 text-sage-600 border border-sage-200">
+          <Binary size={20} />
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Base64 Encoder/Decoder</h1>
-        <p className="text-lg text-gray-600 font-medium">Encode and decode text or file contents locally in your browser.</p>
+        <div className="min-w-0">
+          <h1>Base64 Encoder / Decoder</h1>
+          <p>Encode and decode text or files locally in your browser.</p>
+        </div>
       </div>
 
-      <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-sm p-6 mb-6 flex flex-wrap gap-3 items-center">
+      {/* Toolbar */}
+      <div className="bg-white/70 backdrop-blur-xl rounded-xl border border-stone-100 shadow-sm p-2.5 mb-2 flex flex-wrap gap-2 items-center flex-shrink-0">
         {['encode', 'decode'].map(option => (
-          <button key={option} onClick={() => setMode(option)} className={`px-5 py-3 rounded-2xl font-bold capitalize transition ${mode === option ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{option}</button>
+          <button key={option} onClick={() => setMode(option)} className={`px-4 py-2 rounded-xl font-bold capitalize text-sm transition ${mode === option ? 'bg-sage-500 text-white shadow-lg shadow-sage-200' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{option}</button>
         ))}
-        <label className="ml-auto inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gray-900 text-white font-bold cursor-pointer hover:bg-blue-600 transition">
-          <Upload size={18} /> Upload File
+        <label className="ml-auto inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sage-900 text-white font-bold cursor-pointer hover:bg-sage-700 transition text-sm">
+          <Upload size={15} /> Upload
           <input type="file" className="hidden" onChange={handleFile} />
         </label>
-        {fileName && <span className="text-sm text-gray-500 font-semibold">Loaded: {fileName}</span>}
+        {fileName && <span className="text-xs text-stone-500 font-semibold">Loaded: {fileName}</span>}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-6">
-          <h2 className="text-xl font-black text-gray-900 mb-4">Input</h2>
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} className="w-full min-h-[420px] p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none resize-y" placeholder={mode === 'encode' ? 'Text to encode...' : 'Base64 to decode...'} />
+      {/* Input/Output grid — fills remaining space */}
+      <div className="grid lg:grid-cols-2 gap-3 flex-1 min-h-0 overflow-hidden">
+        <section className="bg-white/70 rounded-xl border border-stone-100 shadow-sm p-3 flex flex-col min-h-0 overflow-hidden">
+          <h2 className="text-sm font-black text-sage-900 mb-2">Input</h2>
+          <textarea value={input} onChange={(e) => setInput(e.target.value)} className="w-full flex-1 p-3 rounded-xl border border-stone-200 bg-stone-50 font-mono text-xs focus:ring-2 focus:ring-sage-200 focus:border-sage-400 outline-none resize-none min-h-0" placeholder={mode === 'encode' ? 'Text to encode...' : 'Base64 to decode...'} />
         </section>
-        <section className="bg-white/70 rounded-[2rem] border border-gray-100 shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-black text-gray-900">Output</h2>
-            <div className="flex gap-2">
-              <button onClick={copyOutput} disabled={!output} className="p-3 rounded-xl bg-gray-100 hover:bg-blue-50 disabled:opacity-40">{copied ? <Check className="text-green-600" /> : <Copy />}</button>
-              <button onClick={downloadOutput} disabled={!output} className="p-3 rounded-xl bg-gray-100 hover:bg-blue-50 disabled:opacity-40"><Download /></button>
-              <button onClick={() => setInput('')} className="p-3 rounded-xl bg-gray-100 hover:bg-red-50"><RotateCcw /></button>
+        <section className="bg-white/70 rounded-xl border border-stone-100 shadow-sm p-3 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-black text-sage-900">Output</h2>
+            <div className="flex gap-1.5">
+              <button onClick={copyOutput} disabled={!output} className="p-2 rounded-lg bg-stone-100 hover:bg-sage-50 disabled:opacity-40 transition"><span className="sr-only">Copy</span>{copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}</button>
+              <button onClick={downloadOutput} disabled={!output} className="p-2 rounded-lg bg-stone-100 hover:bg-sage-50 disabled:opacity-40 transition"><Download size={14} /></button>
+              <button onClick={() => setInput('')} className="p-2 rounded-lg bg-stone-100 hover:bg-red-50 transition"><RotateCcw size={14} /></button>
             </div>
           </div>
-          {(error || conversionError) && <p className="mb-3 text-red-600 font-semibold">{error || conversionError}</p>}
-          <textarea readOnly value={output} className="w-full min-h-[420px] p-5 rounded-2xl border border-gray-200 bg-gray-50 font-mono text-sm outline-none resize-y" placeholder="Result appears here..." />
+          {(error || conversionError) && <p className="mb-1 text-red-600 font-semibold text-xs">{error || conversionError}</p>}
+          <textarea readOnly value={output} className="w-full flex-1 p-3 rounded-xl border border-stone-200 bg-stone-50 font-mono text-xs outline-none resize-none min-h-0" placeholder="Result appears here..." />
         </section>
       </div>
     </div>

@@ -68,28 +68,32 @@ const ImageToPdf = () => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col lg:flex-row gap-8 lg:gap-12 animate-in fade-in duration-500">
-            {/* Left Pane: Configuration & Upload */}
-            <div className="w-full lg:w-[420px] flex-shrink-0 flex flex-col">
-                <div className="mb-8">
-                    <div className="bg-gradient-to-br from-rose-100 to-orange-100 w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-white">
-                        <FileType2 size={36} className="text-rose-600" />
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Image to PDF</h1>
-                    <p className="text-lg text-gray-600 font-medium">Merge beautiful images into a single professional PDF document effortlessly.</p>
+        <div className="h-full flex flex-col animate-in fade-in duration-500">
+            {/* Compact header row */}
+            <div className="compact-service-header">
+                <div className="header-icon bg-sage-100 text-sage-600 border border-sage-200">
+                    <FileType2 size={20} />
                 </div>
+                <div className="min-w-0">
+                    <h1>Image to PDF</h1>
+                    <p>Merge beautiful images into a single professional PDF document effortlessly.</p>
+                </div>
+            </div>
 
-                <div className="bg-white/60 backdrop-blur-2xl p-8 rounded-[2rem] shadow-sm border border-white flex-1 flex flex-col justify-between relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-rose-100/50 rounded-full blur-3xl pointer-events-none" />
+            {/* Main content grid */}
+            <div className="grid lg:grid-cols-[380px_1fr] gap-3 flex-1 min-h-0 overflow-hidden">
+                {/* Left Pane: Configuration & Upload */}
+                <div className="bg-white/70 rounded-2xl border border-stone-100 p-4 flex flex-col justify-between overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-sage-100/50 rounded-full blur-3xl pointer-events-none" />
 
-                    <div className="relative z-10">
-                        <h3 className="text-xs uppercase tracking-widest font-bold text-gray-400 mb-6 flex items-center gap-2">
-                            <Settings size={14} /> PDF Configuration
+                    <div className="relative z-10 flex-1 flex flex-col min-h-0">
+                        <h3 className="text-xs uppercase tracking-widest font-bold text-gray-400 mb-3 flex items-center gap-2 flex-shrink-0">
+                            <Settings size={13} /> PDF Configuration
                         </h3>
 
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-base font-bold text-gray-800 mb-3">
+                        <div className="space-y-4 flex-1 flex flex-col min-h-0">
+                            <div className="flex-shrink-0">
+                                <label className="block text-xs font-bold text-gray-800 mb-1.5">
                                     Document Name
                                 </label>
                                 <div className="relative">
@@ -98,119 +102,122 @@ const ImageToPdf = () => {
                                         value={pdfName}
                                         onChange={(e) => setPdfName(e.target.value)}
                                         placeholder="My_Images.pdf"
-                                        className="w-full px-5 py-4 bg-white/50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all duration-300 font-medium text-gray-800"
+                                        className="w-full px-3 py-2 border border-stone-200 rounded-xl focus:ring-2 focus:ring-sage-200 focus:border-sage-400 outline-none transition text-stone-800 text-sm bg-stone-50"
                                     />
-                                    <FilePlus2 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <FilePlus2 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4" />
                                 </div>
                             </div>
 
-                            <div className="pt-4 border-t border-gray-100/50">
-                                <label className="block text-base font-bold text-gray-800 mb-3">
+                            <div className="pt-3 border-t border-stone-100 flex-1 flex flex-col min-h-0">
+                                <label className="block text-xs font-bold text-gray-800 mb-1.5 flex-shrink-0">
                                     Quick Add More
                                 </label>
-                                <DropZone
-                                    onFileDrop={handleUpload}
-                                    accept="image/*"
-                                    multiple={true}
-                                    icon={Upload}
-                                    title="Add images"
-                                    subtitle="to your PDF"
-                                    colorClass="rose"
-                                />
+                                <div className="flex-1 min-h-0 overflow-y-auto services-scrollbar">
+                                    <DropZone
+                                        onFileDrop={handleUpload}
+                                        accept="image/*"
+                                        multiple={true}
+                                        icon={Upload}
+                                        title="Add images"
+                                        subtitle="to your PDF"
+                                        colorClass="teal"
+                                        compact={true}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="mt-8 relative z-10 border-t border-gray-100/50 pt-8">
+                    <div className="mt-3 relative z-10 border-t border-stone-100 pt-3 flex-shrink-0">
                         <button
                             onClick={generatePdf}
                             disabled={isGenerating || images.length === 0}
-                            className={`w-full py-4 px-6 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 text-lg group ${images.length > 0 && !isGenerating
-                                    ? 'bg-rose-600 text-white hover:bg-rose-700 shadow-xl shadow-rose-200 hover:shadow-rose-300 scale-100'
-                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed scale-[0.98]'
+                            className={`w-full py-2.5 px-4 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-sm group ${images.length > 0 && !isGenerating
+                                    ? 'bg-sage-900 text-white hover:bg-sage-700 shadow-xl shadow-sage-200'
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                 }`}
                         >
-                            {isGenerating ? <Loader2 className="animate-spin w-6 h-6" /> : <FileDown className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />}
+                            {isGenerating ? <Loader2 className="animate-spin w-4 h-4" /> : <FileDown className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />}
                             {isGenerating ? 'Generating PDF...' : `Merge ${images.length} Image${images.length !== 1 ? 's' : ''}`}
                         </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Right Pane: Image List & Reordering */}
-            <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[2.5rem] border-2 border-dashed border-gray-200/80 p-6 lg:p-10 flex flex-col relative overflow-hidden group min-h-[500px]">
-                <AnimatePresence mode="wait">
-                    {images.length === 0 ? (
-                        <motion.div
-                            key="empty"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="w-full h-full flex flex-col items-center justify-center text-center max-w-sm mx-auto my-auto"
-                        >
-                            <div className="bg-rose-50 w-24 h-24 rounded-full flex items-center justify-center mb-6">
-                                <FileImage className="w-12 h-12 text-rose-300" />
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">No Images Selected</h3>
-                            <p className="text-gray-500 font-medium">Use the upload zone on the left to add images you want to combine into a PDF.</p>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="list"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="w-full h-full flex flex-col"
-                        >
-                            <div className="flex items-center justify-between mb-6 px-2">
-                                <h3 className="text-xl font-bold text-gray-800">Page Order</h3>
-                                <div className="bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide border border-rose-100/50">
-                                    {images.length} Pages
+                {/* Right Pane: Image List & Reordering */}
+                <div className="flex-1 bg-white/40 backdrop-blur-md rounded-2xl border-2 border-dashed border-stone-200/80 p-4 flex flex-col relative overflow-hidden group min-h-0">
+                    <AnimatePresence mode="wait">
+                        {images.length === 0 ? (
+                            <motion.div
+                                key="empty"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="w-full h-full flex flex-col items-center justify-center text-center max-w-sm mx-auto my-auto"
+                            >
+                                <div className="bg-sage-50 w-16 h-16 rounded-full flex items-center justify-center mb-4 border border-sage-100">
+                                    <FileImage className="w-8 h-8 text-sage-300" />
                                 </div>
-                            </div>
+                                <h3 className="text-base font-bold text-gray-800 mb-1">No Images Selected</h3>
+                                <p className="text-xs text-gray-500 font-medium">Use the configuration pane on the left to add photos/screenshots you want to compile.</p>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="list"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="w-full h-full flex flex-col min-h-0"
+                            >
+                                <div className="flex items-center justify-between mb-4 px-1 flex-shrink-0">
+                                    <h3 className="text-base font-bold text-gray-800">Selected Images</h3>
+                                    <div className="bg-sage-50 text-sage-600 px-3 py-1 rounded-full text-xs font-bold tracking-wide border border-sage-100/50">
+                                        {images.length} Items
+                                    </div>
+                                </div>
 
-                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                                <Reorder.Group axis="y" values={images} onReorder={setImages} className="space-y-4">
-                                    <AnimatePresence>
-                                        {images.map((img, index) => (
-                                            <Reorder.Item
-                                                key={img.id}
-                                                value={img}
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, x: -20 }}
-                                                className="bg-white p-4 rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-5 group/item hover:border-rose-100 transition-colors cursor-grab active:cursor-grabbing relative overflow-hidden"
-                                            >
-                                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-rose-200 to-rose-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
-
-                                                <div className="p-2 -ml-2 text-gray-400 group-hover/item:text-rose-500 transition-colors">
-                                                    <GripVertical size={20} />
-                                                </div>
-
-                                                <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex-shrink-0">
-                                                    <span className="absolute top-1 left-1 bg-gray-900/60 backdrop-blur-md text-white text-[10px] px-1.5 font-bold rounded-md z-10">{index + 1}</span>
-                                                    <img src={img.preview} alt="preview" className="w-full h-full object-cover" />
-                                                </div>
-
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="font-bold text-gray-800 truncate text-base">{img.file.name}</h4>
-                                                    <p className="text-sm text-gray-500 font-medium">{(img.file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                                </div>
-
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
-                                                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100 flex-shrink-0"
+                                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar min-h-0">
+                                    <Reorder.Group axis="y" values={images} onReorder={setImages} className="space-y-3">
+                                        <AnimatePresence>
+                                            {images.map((img, index) => (
+                                                <Reorder.Item
+                                                    key={img.id}
+                                                    value={img}
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, x: -20 }}
+                                                    className="bg-white p-3 rounded-xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-3 group/item hover:border-sage-100 transition-colors cursor-grab active:cursor-grabbing relative overflow-hidden"
                                                 >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </Reorder.Item>
-                                        ))}
-                                    </AnimatePresence>
-                                </Reorder.Group>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-sage-300 to-sage-500 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+
+                                                    <div className="p-1 -ml-1 text-gray-400 group-hover/item:text-sage-500 transition-colors">
+                                                        <GripVertical size={16} />
+                                                    </div>
+
+                                                    <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-stone-50 border border-stone-100 flex items-center justify-center flex-shrink-0">
+                                                        <span className="absolute top-1 left-1 bg-white/80 backdrop-blur-sm text-sage-700 text-[9px] px-1 font-black rounded-md z-10">{index + 1}</span>
+                                                        <img src={img.preview} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                    </div>
+
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="font-bold text-gray-800 truncate text-sm">{img.file.name}</h4>
+                                                        <p className="text-xs text-gray-500 font-medium">{(img.file.size / 1024 / 1024).toFixed(2)} MB Image File</p>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
+                                                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100 flex-shrink-0"
+                                                    >
+                                                        <Trash2 size={15} />
+                                                    </button>
+                                                </Reorder.Item>
+                                            ))}
+                                        </AnimatePresence>
+                                    </Reorder.Group>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
         </div>
     );
