@@ -1,9 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 const ServiceLayout = () => {
     const shellRef = useRef(null);
+    const location = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
 
     useEffect(() => {
         const anime = window.anime;
@@ -18,6 +23,7 @@ const ServiceLayout = () => {
             easing: 'easeOutExpo',
         });
     }, []);
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-stretch justify-center p-3 sm:p-4 md:p-8 relative overflow-hidden">
