@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, WifiOff } from 'lucide-react';
 import { services } from '../utils/serviceData';
+import AiAgentFab from '../components/AiAgentFab';
 
 const ServiceLayout = () => {
     const shellRef = useRef(null);
@@ -93,6 +94,7 @@ const ServiceLayout = () => {
                     )}
                 </div>
             </div>
+            <AiAgentFab />
         </div>
     );
 };

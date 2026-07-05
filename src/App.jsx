@@ -23,6 +23,7 @@ import UrlEncoder from './pages/UrlEncoder';
 import HashGenerator from './pages/HashGenerator';
 import CsvJsonConverter from './pages/CsvJsonConverter';
 import AiPurger from './pages/AiPurger';
+import AiChat from './pages/AiChat';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -64,6 +65,7 @@ function App() {
             <Route path="/hash-generator" element={<HashGenerator />} />
             <Route path="/csv-json-converter" element={<CsvJsonConverter />} />
             <Route path="/ai-purger" element={<AiPurger />} />
+            <Route path="/ai-chat" element={<AiChat />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&

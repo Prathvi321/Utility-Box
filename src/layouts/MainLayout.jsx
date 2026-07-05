@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Search, Sparkles, Loader2, WifiOff } from 'lucide-react';
+import AiAgentFab from '../components/AiAgentFab';
 
 const MainLayout = () => {
      const [searchTerm, setSearchTerm] = useState('');
@@ -221,6 +222,7 @@ const MainLayout = () => {
                     &copy; {new Date().getFullYear()} UtilityBox. Fast, responsive tools for everyday tasks.
                 </div>
             </footer>
+            <AiAgentFab />
         </div>
     );
 };
