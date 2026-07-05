@@ -100,6 +100,15 @@ const pcmToWav = (pcm16, sampleRate) => {
     return new Blob([view], { type: 'audio/wav' });
 };
 
+const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = (error) => reject(error);
+    });
+};
+
 // --- Custom Interactive Widgets ---
 
 // 1. Upgraded Canvas-based QR Code Generator with Logo Overlay
@@ -1746,9 +1755,52 @@ const AiChat = () => {
   const [inputText, setInputText] = useState('');
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const fileInputRef = useRef(null);
   const threadEndRef = useRef(null);
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.relatedTarget && !e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const list = Array.from(e.dataTransfer.files);
+      const validFiles = list.filter(f => f.type.startsWith('image/') || f.type === 'application/pdf');
+      if (validFiles.length > 0) {
+        const newFiles = validFiles.map(f => ({
+          id: Math.random().toString(36).substr(2, 9),
+          file: f,
+          name: f.name,
+          size: f.size,
+          type: f.type,
+          previewUrl: f.type.startsWith('image/') ? URL.createObjectURL(f) : null
+        }));
+        setAttachedFiles(prev => [...prev, ...newFiles]);
+      }
+    }
+  };
 
   // Scroll to bottom of message logs when a new one is added
   useEffect(() => {
@@ -1831,10 +1883,30 @@ const AiChat = () => {
       };
     });
 
-    // Add current user prompt
+    // Convert current turn attached images to base64 inlineData parts for multimodal support
+    const imageFiles = sentFiles.filter(f => f.file.type.startsWith('image/'));
+    const imageParts = [];
+    for (const img of imageFiles) {
+      try {
+        const b64 = await fileToBase64(img.file);
+        imageParts.push({
+          inlineData: {
+            mimeType: img.file.type,
+            data: b64
+          }
+        });
+      } catch (err) {
+        console.error("Failed to convert attached image to base64:", err);
+      }
+    }
+
+    // Add current user prompt with multimodal parts
     historyPayload.push({
       role: 'user',
-      parts: [{ text: formattedText }]
+      parts: [
+        { text: formattedText },
+        ...imageParts
+      ]
     });
 
     // Query Netlify backend agent endpoint
@@ -1992,7 +2064,33 @@ const AiChat = () => {
       </div>
 
       {/* Main Chat Layout container */}
-      <div className="flex-1 min-h-0 bg-white border border-stone-200 rounded-[2rem] flex flex-col shadow-sm relative overflow-hidden">
+      <div 
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className="flex-1 min-h-0 bg-white border border-stone-200 rounded-[2rem] flex flex-col shadow-sm relative overflow-hidden"
+      >
+        <AnimatePresence>
+          {isDragging && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-sage-900/50 backdrop-blur-md border-4 border-dashed border-sage-500 rounded-[2rem] z-50 flex flex-col items-center justify-center text-white pointer-events-none"
+            >
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                className="w-16 h-16 bg-white/10 border border-white/20 rounded-2xl flex items-center justify-center mb-4 shadow-xl backdrop-blur-lg"
+              >
+                <FileUp size={32} className="text-white" />
+              </motion.div>
+              <h3 className="text-xl font-black tracking-tight">Drop files to attach</h3>
+              <p className="text-sm font-semibold text-sage-200 mt-1.5">Attach images and PDF documents instantly</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Messages Log Panel */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 services-scrollbar bg-stone-50/20">
