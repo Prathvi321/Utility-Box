@@ -117,6 +117,28 @@ export async function handler(event, context) {
                         }
                     },
                     {
+                        name: "generate_pdf_from_text",
+                        description: "Trigger the Text-to-PDF Generator tool. Call this when the user pastes text (like student tables, reports, notes, lists) and requests to compile, render, or generate a PDF file from it.",
+                        parameters: {
+                          type: "OBJECT",
+                          properties: {
+                            text: {
+                              type: "STRING",
+                              description: "The formatted text content. AI should format raw tables or layout cleanly before providing it to the tool."
+                            },
+                            title: {
+                              type: "STRING",
+                              description: "An optional document title to print in the running header of each page."
+                            },
+                            outputName: {
+                              type: "STRING",
+                              description: "Suggested output filename. E.g., 'document.pdf'."
+                            }
+                          },
+                          required: ["text"]
+                        }
+                    },
+                    {
                         name: "text_to_speech",
                         description: "Trigger the Text-to-Speech tool. Call this when the user asks to convert text/script/message to audio/speech/voice.",
                         parameters: {

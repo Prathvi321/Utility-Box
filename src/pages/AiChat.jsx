@@ -1742,6 +1742,184 @@ const ColorPickerWidget = () => {
   );
 };
 
+// 15. Text-to-PDF Generator Widget
+const GeneratePdfFromTextWidget = ({ args }) => {
+  const [text, setText] = useState(args?.text || '');
+  const [title, setTitle] = useState(args?.title || 'Document');
+  const [outputName, setOutputName] = useState(args?.outputName || 'Document.pdf');
+  const [fontSize, setFontSize] = useState(11);
+  const [margins, setMargins] = useState(15); // mm margins
+  const [generating, setGenerating] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState('');
+
+  const generatePdf = async () => {
+    setGenerating(true);
+    setDownloadUrl('');
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
+      const printableWidth = pageWidth - (margins * 2);
+
+      // Split text into lines that wrap nicely within margins
+      doc.setFont('Courier', 'normal');
+      doc.setFontSize(fontSize);
+      const lines = doc.splitTextToSize(text, printableWidth);
+
+      let cursorY = margins + 10; // Start below the header
+      const lineHeight = fontSize * 0.45; // Rough font-size ratio to mm height
+
+      lines.forEach(line => {
+        // If line cursor exceeds printable area, add new page
+        if (cursorY > pageHeight - margins - 5) {
+          doc.addPage();
+          cursorY = margins + 10;
+        }
+        doc.text(line, margins, cursorY);
+        cursorY += lineHeight + 1.5; // Line height spacing
+      });
+
+      // Pass 2: Header and Footer Indexing
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+
+        // Header (Running title & Divider)
+        if (title) {
+          doc.setFont('Courier', 'bold');
+          doc.text(title.toUpperCase(), margins, margins);
+          doc.setDrawColor(230, 230, 230);
+          doc.line(margins, margins + 2, pageWidth - margins, margins + 2);
+        }
+
+        // Footer Page Indexing (Page X of Y)
+        doc.setFont('Courier', 'normal');
+        doc.text(`Page ${i} of ${totalPages}`, pageWidth - margins - 25, pageHeight - margins + 5);
+      }
+
+      const pdfBlob = doc.output('blob');
+      const url = URL.createObjectURL(pdfBlob);
+      setDownloadUrl(url);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (args?.text) {
+      generatePdf();
+    }
+  }, [args?.text]);
+
+  const handleDownload = () => {
+    if (downloadUrl) {
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = outputName.endsWith('.pdf') ? outputName : `${outputName}.pdf`;
+      link.click();
+    }
+  };
+
+  return (
+    <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm mt-3 w-full max-w-md text-xs">
+      <div className="flex items-center gap-2 mb-3 text-sage-800 font-extrabold text-sm border-b border-stone-100 pb-2">
+        <FileText className="w-4 h-4 text-sage-600" />
+        <span>Text to PDF Generator</span>
+      </div>
+
+      <div className="space-y-4">
+        {/* Editable Preview text */}
+        <div>
+          <label className="block text-[9px] font-bold text-stone-400 uppercase mb-1">Text Content</label>
+          <textarea 
+            value={text}
+            onChange={(e) => { setText(e.target.value); setDownloadUrl(''); }}
+            rows={5}
+            className="w-full p-2.5 bg-stone-50 border border-stone-255 rounded-xl font-mono text-[10px] focus:outline-none focus:ring-1 focus:ring-sage-500 max-h-[160px] services-scrollbar"
+            placeholder="Pasted data table or document text..."
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-xs bg-stone-50/50 p-3 rounded-xl border border-stone-150">
+          <div>
+            <label className="block text-[9px] font-bold text-stone-400 uppercase">Document Title</label>
+            <input 
+              type="text"
+              value={title}
+              onChange={(e) => { setTitle(e.target.value); setDownloadUrl(''); }}
+              className="w-full px-2 py-1 mt-1 border border-stone-200 rounded bg-white"
+            />
+          </div>
+          <div>
+            <label className="block text-[9px] font-bold text-stone-400 uppercase">Output Name</label>
+            <input 
+              type="text"
+              value={outputName}
+              onChange={(e) => setOutputName(e.target.value)}
+              className="w-full px-2 py-1 mt-1 border border-stone-200 rounded bg-white"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-xs bg-stone-50/50 p-3 rounded-xl border border-stone-150">
+          <div>
+            <label className="block text-[9px] font-bold text-stone-400 uppercase">Font Size</label>
+            <select 
+              value={fontSize}
+              onChange={(e) => { setFontSize(parseInt(e.target.value)); setDownloadUrl(''); }}
+              className="w-full bg-white border border-stone-200 rounded p-1 mt-1 text-xs font-bold"
+            >
+              <option value="9">Small (9pt)</option>
+              <option value="11">Normal (11pt)</option>
+              <option value="13">Large (13pt)</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-[9px] font-bold text-stone-400 uppercase">Margins (mm)</label>
+            <select 
+              value={margins}
+              onChange={(e) => { setMargins(parseInt(e.target.value)); setDownloadUrl(''); }}
+              className="w-full bg-white border border-stone-200 rounded p-1 mt-1 text-xs font-bold"
+            >
+              <option value="10">Narrow (10mm)</option>
+              <option value="15">Normal (15mm)</option>
+              <option value="20">Wide (20mm)</option>
+            </select>
+          </div>
+        </div>
+
+        {!downloadUrl ? (
+          <button
+            onClick={generatePdf}
+            disabled={generating || !text.trim()}
+            className="w-full py-2 bg-sage-950 text-white font-bold rounded-xl text-xs hover:bg-sage-800 disabled:opacity-40 transition-all flex items-center justify-center gap-2"
+          >
+            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+            {generating ? 'Generating PDF...' : 'Compile to PDF'}
+          </button>
+        ) : (
+          <button
+            onClick={handleDownload}
+            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-md"
+          >
+            <Download className="w-4 h-4" /> Download PDF Document
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // --- Main AI Chat Component ---
 const AiChat = () => {
   const [messages, setMessages] = useState([
@@ -1976,6 +2154,8 @@ const AiChat = () => {
         return <MergePdfWidget args={args} initialFiles={msg.parentUserFiles} />;
       case 'extract_pdf_pages':
         return <ExtractPdfPagesWidget args={args} initialFiles={msg.parentUserFiles} />;
+      case 'generate_pdf_from_text':
+        return <GeneratePdfFromTextWidget args={args} />;
       case 'pdf_to_images':
         return <p className="text-[10px] text-stone-500 italic">Open the page tool or upload your PDF below to render pages to images.</p>;
 
