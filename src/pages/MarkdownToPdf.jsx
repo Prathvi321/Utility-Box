@@ -135,6 +135,10 @@ const PREVIEW_CSS = `
   .hljs-function,.hljs-title{color:#9FC1E0;}
   .hljs-variable,.hljs-params{color:var(--code-ink);}
   .hljs-meta{color:#7C8A78;}
+  /* Global page-break rules — must be outside any media query so they apply at print time */
+  .page-break{break-before:page;page-break-before:always;}
+  .md-h{break-after:avoid;page-break-after:avoid;break-inside:avoid;page-break-inside:avoid;}
+  .code-block,.table-wrap,table,.md-quote,img{break-inside:avoid;page-break-inside:avoid;}
 `;
 
 /* ─────────────────────────────────────────────
@@ -152,6 +156,9 @@ function applyStyles(rawHtml, breakLevel) {
     div.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(h => {
         h.className = headingMap[h.tagName] || '';
         const level = parseInt(h.tagName[1]);
+        // Add id for TOC anchor links
+        const id = h.textContent.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').trim();
+        h.id = id;
         if (level <= breakLevel) h.classList.add('page-break');
     });
 
