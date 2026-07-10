@@ -24,6 +24,7 @@ import HashGenerator from './pages/HashGenerator';
 import CsvJsonConverter from './pages/CsvJsonConverter';
 import AiPurger from './pages/AiPurger';
 import AiChat from './pages/AiChat';
+import MarkdownToPdf from './pages/MarkdownToPdf';
 import { services } from './utils/serviceData';
 
 // Placeholder component for unimplemented services
@@ -66,6 +67,7 @@ function App() {
             <Route path="/csv-json-converter" element={<CsvJsonConverter />} />
             <Route path="/ai-purger" element={<AiPurger />} />
             <Route path="/ai-chat" element={<AiChat />} />
+            <Route path="/markdown-to-pdf" element={<MarkdownToPdf />} />
 
             {services.filter(s =>
               s.id !== 'text-to-speech' &&
@@ -87,7 +89,8 @@ function App() {
               s.id !== 'url-encoder' &&
               s.id !== 'hash-generator' &&
               s.id !== 'csv-json-converter' &&
-              s.id !== 'ai-purger'
+              s.id !== 'ai-purger' &&
+              s.id !== 'markdown-to-pdf'
             ).map(service => (
               <Route
                 key={service.id}

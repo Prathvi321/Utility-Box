@@ -18,7 +18,8 @@ import {
     Link2,
     Fingerprint,
     Table2,
-    ShieldCheck
+    ShieldCheck,
+    FileCode
 } from 'lucide-react';
 
 export const services = [
@@ -184,5 +185,13 @@ export const services = [
         icon: ShieldCheck,
         color: 'forest',
         keywords: ['metadata', 'exif', 'strip', 'clean', 'ai', 'privacy', 'coordinates', 'gps', 'remove', 'purger']
+    },
+    {
+        id: 'markdown-to-pdf',
+        title: 'Markdown to PDF',
+        description: 'Convert Markdown files into print-ready PDFs with cover page, table of contents, and syntax-highlighted code.',
+        icon: FileCode,
+        color: 'sage',
+        keywords: ['markdown', 'pdf', 'convert', 'document', 'export', 'print', 'md', 'code', 'toc', 'cover']
     }
 ];
