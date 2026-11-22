@@ -56,6 +56,14 @@ const Home = () => {
     const gridRef = useRef(null);
     const servicesRef = useRef(null);
 
+    useEffect(() => {
+        document.title = 'Utility Box - Fast & Smart Offline Web Utilities';
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute('content', 'A comprehensive suite of free, client-side web utilities: PDF merger, PDF to images, image compressor, format converter, QR generator, GST invoice maker, AI background remover, and more.');
+        }
+    }, []);
+
     const filteredServices = React.useMemo(() => {
         const term = searchTerm?.trim() || activeFilter;
         if (!term) return services;

@@ -45,6 +45,16 @@ const ServiceLayout = () => {
     const requiresInternet = currentService?.requiresInternet;
     const isOfflineService = !isOnline && requiresInternet;
 
+    useEffect(() => {
+        if (currentService) {
+            document.title = `${currentService.title} - Utility Box`;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) {
+                metaDesc.setAttribute('content', `${currentService.title}: ${currentService.description} - Free, fast, browser-based tool on Utility Box.`);
+            }
+        }
+    }, [currentService]);
+
     return (
         <div className="h-screen bg-gradient-to-br from-sage-50 via-white to-stone-100 flex items-stretch justify-center p-1.5 sm:p-2 md:p-3 relative overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">

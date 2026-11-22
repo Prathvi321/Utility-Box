@@ -27,6 +27,12 @@ export default function InvoiceGenerator() {
     const invoiceRef = useRef(null);
 
     useEffect(() => {
+        document.title = 'Invoice Generator - Utility Box';
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute('content', 'Generate professional GST invoices instantly in your browser with Utility Box.');
+        }
+
         const raw = localStorage.getItem('gst_invoice_settings');
         if (raw) {
             const data = JSON.parse(raw);
