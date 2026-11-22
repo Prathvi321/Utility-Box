@@ -1,145 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://utilitybox.netlify.app/</loc>
+    <loc>https://utilityboxy.netlify.app/</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/pdf-merger</loc>
+    <loc>https://utilityboxy.netlify.app/pdf-merger</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/pdf-to-images</loc>
+    <loc>https://utilityboxy.netlify.app/pdf-to-images</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/qr-generator</loc>
+    <loc>https://utilityboxy.netlify.app/qr-generator</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/image-compressor</loc>
+    <loc>https://utilityboxy.netlify.app/image-compressor</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/text-to-speech</loc>
+    <loc>https://utilityboxy.netlify.app/text-to-speech</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/color-picker</loc>
+    <loc>https://utilityboxy.netlify.app/color-picker</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/watermark-adder</loc>
+    <loc>https://utilityboxy.netlify.app/watermark-adder</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/image-converter</loc>
+    <loc>https://utilityboxy.netlify.app/image-converter</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/image-to-pdf</loc>
+    <loc>https://utilityboxy.netlify.app/image-to-pdf</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/whatsapp-generator</loc>
+    <loc>https://utilityboxy.netlify.app/whatsapp-generator</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/remove-background</loc>
+    <loc>https://utilityboxy.netlify.app/remove-background</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/invoice-generator</loc>
+    <loc>https://utilityboxy.netlify.app/invoice-generator</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/framesnap</loc>
+    <loc>https://utilityboxy.netlify.app/framesnap</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/database-converter</loc>
+    <loc>https://utilityboxy.netlify.app/database-converter</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/base64-converter</loc>
+    <loc>https://utilityboxy.netlify.app/base64-converter</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/url-encoder</loc>
+    <loc>https://utilityboxy.netlify.app/url-encoder</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/hash-generator</loc>
+    <loc>https://utilityboxy.netlify.app/hash-generator</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/csv-json-converter</loc>
+    <loc>https://utilityboxy.netlify.app/csv-json-converter</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/dns-tracker</loc>
+    <loc>https://utilityboxy.netlify.app/dns-tracker</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/ai-purger</loc>
+    <loc>https://utilityboxy.netlify.app/ai-purger</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/markdown-to-pdf</loc>
+    <loc>https://utilityboxy.netlify.app/markdown-to-pdf</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/document-to-pdf</loc>
+    <loc>https://utilityboxy.netlify.app/document-to-pdf</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://utilitybox.netlify.app/ai-chat</loc>
+    <loc>https://utilityboxy.netlify.app/ai-chat</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://utilitybox.netlify.app/sitemap.xml
+Sitemap: https://utilityboxy.netlify.app/sitemap.xml

@@ -118,7 +118,7 @@ const QrCodeWidget = ({ url }) => {
   const fileInputRef = useRef(null);
 
   // States
-  const [text, setText] = useState(url || 'https://utilitybox.netlify.app');
+  const [text, setText] = useState(url || 'https://utilityboxy.netlify.app');
   const [dotStyle, setDotStyle] = useState('square'); // 'square', 'rounded', 'circle'
   const [dotScale, setDotScale] = useState(0.9);
   const [qrColor, setQrColor] = useState('#0f172a');
