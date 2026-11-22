@@ -19,7 +19,8 @@ import {
     Fingerprint,
     Table2,
     ShieldCheck,
-    FileCode
+    FileCode,
+    FileCheck2
 } from 'lucide-react';
 
 export const services = [
@@ -193,5 +194,13 @@ export const services = [
         icon: FileCode,
         color: 'sage',
         keywords: ['markdown', 'pdf', 'convert', 'document', 'export', 'print', 'md', 'code', 'toc', 'cover']
+    },
+    {
+        id: 'document-to-pdf',
+        title: 'Document to PDF',
+        description: 'Convert Word (.docx), PowerPoint (.pptx), Excel (.xlsx, .csv), and Text files to PDF',
+        icon: FileCheck2,
+        color: 'sage',
+        keywords: ['document', 'word', 'docx', 'powerpoint', 'pptx', 'excel', 'xlsx', 'xls', 'csv', 'txt', 'convert', 'pdf', 'slides', 'sheets', 'doc2pdf']
     }
 ];

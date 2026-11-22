@@ -37,7 +37,8 @@ import {
   Database,
   Play,
   RotateCcw,
-  Copy
+  Copy,
+  FileCheck2
 } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import qrcode from 'qrcode-generator';
@@ -2150,6 +2151,8 @@ const AiChat = () => {
     const { name, args } = msg.toolCall;
     switch (name) {
       // PDF & Documents
+      case 'convert_document_to_pdf':
+        return <DocumentToPdfWidget initialFiles={msg.parentUserFiles} />;
       case 'merge_pdf':
         return <MergePdfWidget args={args} initialFiles={msg.parentUserFiles} />;
       case 'extract_pdf_pages':
@@ -2790,6 +2793,100 @@ const TextToSpeechWidget = ({ args }) => {
           </a>
         </div>
       ) : null}
+    </div>
+  );
+};
+
+// --- Document to PDF Widget ---
+const DocumentToPdfWidget = ({ initialFiles }) => {
+  const [files, setFiles] = useState([]);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      const docs = initialFiles.filter(f => {
+        const name = (f.file?.name || f.name || '').toLowerCase();
+        return name.endsWith('.docx') || name.endsWith('.pptx') || name.endsWith('.xlsx') || name.endsWith('.xls') || name.endsWith('.csv') || name.endsWith('.txt') || name.endsWith('.md');
+      });
+      if (docs.length > 0) {
+        setFiles(docs.map(f => ({
+          id: Math.random().toString(36).substr(2, 9),
+          file: f.file || f,
+          name: f.file?.name || f.name
+        })));
+      }
+    }
+  }, [initialFiles]);
+
+  const handleFileDrop = (incoming) => {
+    const list = incoming instanceof FileList ? Array.from(incoming) : (Array.isArray(incoming) ? incoming : [incoming]);
+    const docs = list.filter(f => {
+      const name = (f.name || '').toLowerCase();
+      return name.endsWith('.docx') || name.endsWith('.pptx') || name.endsWith('.xlsx') || name.endsWith('.xls') || name.endsWith('.csv') || name.endsWith('.txt') || name.endsWith('.md');
+    });
+
+    if (docs.length > 0) {
+      setFiles(prev => [...prev, ...docs.map(file => ({
+        id: Math.random().toString(36).substr(2, 9),
+        file,
+        name: file.name
+      }))]);
+      setErrorMsg('');
+    } else {
+      setErrorMsg('Please select Word (.docx), PowerPoint (.pptx), Excel (.xlsx, .csv), or Text files.');
+    }
+  };
+
+  return (
+    <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm mt-3 w-full max-w-md">
+      <div className="flex items-center justify-between mb-3 text-sage-800 font-extrabold text-sm border-b border-stone-100 pb-2">
+        <div className="flex items-center gap-2">
+          <FileCheck2 className="w-4 h-4 text-sage-600" />
+          <span>Universal Document to PDF Studio</span>
+        </div>
+        <Link to="/document-to-pdf" className="text-xs text-sage-600 hover:text-sage-800 underline font-bold">
+          Open Full Studio →
+        </Link>
+      </div>
+
+      <div className="space-y-3">
+        {files.length === 0 ? (
+          <DropZone
+            onFileDrop={handleFileDrop}
+            accept=".docx,.pptx,.xlsx,.xls,.csv,.txt,.md"
+            multiple={true}
+            title="Drop Word, PowerPoint, Excel, or Text"
+            subtitle="or click to browse"
+          />
+        ) : (
+          <div className="space-y-2">
+            <div className="max-h-36 overflow-y-auto services-scrollbar space-y-1.5">
+              {files.map(item => (
+                <div key={item.id} className="flex items-center justify-between p-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold">
+                  <span className="truncate max-w-[240px] text-stone-700">{item.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setFiles(prev => prev.filter(f => f.id !== item.id))}
+                    className="text-stone-400 hover:text-red-500 p-1"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              to="/document-to-pdf"
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-sage-900 hover:bg-sage-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              Open Document Studio with {files.length} Document{files.length !== 1 ? 's' : ''}
+            </Link>
+          </div>
+        )}
+
+        {errorMsg && <p className="text-xs text-red-600 font-semibold">{errorMsg}</p>}
+      </div>
     </div>
   );
 };

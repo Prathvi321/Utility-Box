@@ -20,7 +20,10 @@ const servicesMetadata = [
     { id: 'url-encoder', title: 'URL Encoder/Decoder', description: 'Encode and decode URLs, query strings, and URL components.', keywords: ['url', 'encode', 'decode', 'uri', 'query'] },
     { id: 'hash-generator', title: 'Hash Generator', description: 'Generate secure SHA hashes from text in your browser.', keywords: ['hash', 'sha', 'sha-256', 'checksum', 'crypto'] },
     { id: 'csv-json-converter', title: 'CSV to JSON Converter', description: 'Convert CSV data into JSON and JSON arrays back into CSV.', keywords: ['csv', 'json', 'convert', 'table', 'data'] },
-    { id: 'dns-tracker', title: 'DNS Tracker', description: 'Track and verify DNS records globally.', keywords: ['dns', 'domain', 'tracker', 'records', 'whois', 'lookup'] }
+    { id: 'dns-tracker', title: 'DNS Tracker', description: 'Track and verify DNS records globally.', keywords: ['dns', 'domain', 'tracker', 'records', 'whois', 'lookup'] },
+    { id: 'ai-purger', title: 'AI Media Purger', description: 'Strip AI footprints, prompt trails, device parameters, and EXIF coordinates from images and videos.', keywords: ['metadata', 'exif', 'strip', 'clean', 'ai', 'privacy', 'gps', 'remove'] },
+    { id: 'markdown-to-pdf', title: 'Markdown to PDF', description: 'Convert Markdown files into print-ready PDFs with cover page, table of contents, and syntax-highlighted code.', keywords: ['markdown', 'pdf', 'convert', 'document', 'export', 'print', 'md'] },
+    { id: 'document-to-pdf', title: 'Document to PDF', description: 'Convert Word (.docx), PowerPoint (.pptx), Excel (.xlsx, .csv), and Text files to PDF', keywords: ['document', 'word', 'docx', 'powerpoint', 'pptx', 'excel', 'xlsx', 'xls', 'csv', 'txt', 'convert', 'pdf', 'slides', 'sheets', 'doc2pdf'] }
 ];
 
 export async function handler(event, context) {

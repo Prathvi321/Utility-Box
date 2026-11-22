@@ -96,3 +96,81 @@
   .border-gray-300 { @apply border-stone-300; }
   .border-gray-400 { @apply border-stone-400; }
 }
+
+/* Document to PDF Staging Area & Formatting */
+#render-staging-area {
+  position: fixed;
+  left: -15000px;
+  top: 0;
+  width: 1200px;
+  background: #ffffff;
+  z-index: -9999;
+  pointer-events: none;
+}
+.docx-wrapper {
+  background: transparent !important;
+  padding: 0 !important;
+}
+.docx-wrapper > section.docx {
+  box-shadow: none !important;
+  margin-bottom: 0 !important;
+}
+.excel-sheet-page {
+  background: #ffffff;
+  padding: 28px 32px;
+  color: #0f172a;
+  font-family: 'Inter', sans-serif;
+  page-break-after: always;
+}
+.excel-sheet-page:last-child {
+  page-break-after: auto;
+}
+.excel-sheet-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #7B9669;
+  display: inline-block;
+}
+.excel-sheet-page table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+.excel-sheet-page td, .excel-sheet-page th {
+  border: 1px solid #cbd5e1;
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+}
+.excel-sheet-page tr:first-child td {
+  background-color: #f1f5f9;
+  font-weight: 600;
+}
+.pptx-slide-page {
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  page-break-after: always;
+  font-family: 'Inter', sans-serif;
+}
+.pptx-slide-page:last-child {
+  page-break-after: auto;
+}
+.txt-doc-page {
+  background: #ffffff;
+  padding: 48px 54px;
+  color: #1e293b;
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  width: 794px;
+  box-sizing: border-box;
+}

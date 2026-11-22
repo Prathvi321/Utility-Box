@@ -139,6 +139,19 @@ export async function handler(event, context) {
                         }
                     },
                     {
+                        name: "convert_document_to_pdf",
+                        description: "Trigger the Document to PDF Converter tool. Call this when the user asks to convert Word documents (.docx), PowerPoint presentations (.pptx), Excel spreadsheets (.xlsx, .xls, .csv), or text files (.txt, .md) into PDF.",
+                        parameters: {
+                          type: "OBJECT",
+                          properties: {
+                            format: {
+                              type: "STRING",
+                              description: "The format or type of document to convert (e.g. 'docx', 'pptx', 'xlsx', 'txt')."
+                            }
+                          }
+                        }
+                    },
+                    {
                         name: "text_to_speech",
                         description: "Trigger the Text-to-Speech tool. Call this when the user asks to convert text/script/message to audio/speech/voice.",
                         parameters: {

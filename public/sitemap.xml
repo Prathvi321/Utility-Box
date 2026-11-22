@@ -133,6 +133,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://utilitybox.netlify.app/document-to-pdf</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://utilitybox.netlify.app/ai-chat</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
