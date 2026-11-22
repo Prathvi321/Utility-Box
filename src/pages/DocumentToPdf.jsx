@@ -7,6 +7,11 @@ import {
 import JSZip from 'jszip';
 import DropZone from '../components/DropZone';
 
+// Ensure JSZip is globally available on window for docx-preview and other libraries
+if (typeof window !== 'undefined') {
+    window.JSZip = window.JSZip || JSZip;
+}
+
 /* ─────────────────────────────────────────────
    Load external CDN scripts dynamically
    ───────────────────────────────────────────── */
@@ -67,15 +72,27 @@ export default function DocumentToPdf() {
     // Preload conversion libraries
     useEffect(() => {
         let mounted = true;
-        Promise.all([
-            loadScript('https://cdn.jsdelivr.net/npm/docx-preview@0.3.2/dist/docx-preview.min.js'),
-            loadScript('https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js')
-        ]).then(() => {
-            if (mounted) setScriptsLoaded(true);
-        }).catch(err => {
-            console.error('Failed to load document conversion scripts:', err);
-        });
+        if (typeof window !== 'undefined') {
+            window.JSZip = window.JSZip || JSZip;
+        }
+
+        const initScripts = async () => {
+            try {
+                if (typeof window !== 'undefined' && !window.JSZip) {
+                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+                }
+                await Promise.all([
+                    loadScript('https://cdn.jsdelivr.net/npm/docx-preview@0.3.2/dist/docx-preview.min.js'),
+                    loadScript('https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js'),
+                    loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js')
+                ]);
+                if (mounted) setScriptsLoaded(true);
+            } catch (err) {
+                console.error('Failed to load document conversion scripts:', err);
+            }
+        };
+
+        initScripts();
 
         return () => {
             mounted = false;
@@ -143,6 +160,9 @@ export default function DocumentToPdf() {
 
     /* ── Renderers ── */
     const renderDocxToHost = async (file, docHost) => {
+        if (typeof window !== 'undefined') {
+            window.JSZip = window.JSZip || JSZip;
+        }
         const arrayBuffer = await file.arrayBuffer();
         await window.docx.renderAsync(arrayBuffer, docHost, null, {
             className: 'docx',
